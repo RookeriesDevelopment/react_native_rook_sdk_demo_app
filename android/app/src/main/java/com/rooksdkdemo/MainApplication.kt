@@ -1,6 +1,8 @@
 package com.rooksdkdemo
 
 import android.app.Application
+import android.os.Build
+import androidx.lifecycle.Lifecycle
 import com.facebook.react.PackageList
 import com.facebook.react.ReactApplication
 import com.facebook.react.ReactHost
@@ -11,8 +13,12 @@ import com.facebook.react.defaults.DefaultReactHost.getDefaultReactHost
 import com.facebook.react.defaults.DefaultReactNativeHost
 import com.facebook.react.flipper.ReactNativeFlipper
 import com.facebook.soloader.SoLoader
+import com.rookmotion.rook.sdk.domain.enums.SyncInstruction
+import com.rookmotion.rook.sdk.domain.environment.RookEnvironment
+import com.rookmotion.rook.sdk.framework.delegate.rookYesterdaySync
 
 class MainApplication : Application(), ReactApplication {
+
 
   override val reactNativeHost: ReactNativeHost =
       object : DefaultReactNativeHost(this) {

@@ -8,13 +8,14 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+  
   self.moduleName = @"RookSdkDemo";
   
   self.initialProps = @{};
   
   [[RookBackGroundSync shared] setBackListeners];
   
-  return [super application:application didFinishLaunchingWithOptions:launchOptions];
+    return [super application:application didFinishLaunchingWithOptions:launchOptions];
 }
 
 - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge
