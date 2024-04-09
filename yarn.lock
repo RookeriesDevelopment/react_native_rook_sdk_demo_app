@@ -5727,10 +5727,10 @@ react-native-rook-logger-react-native@^0.3.10:
     axios "^1.6.8"
     xstate "^4.38.2"
 
-react-native-rook-sdk@^0.2.4:
-  version "0.2.4"
-  resolved "https://registry.yarnpkg.com/react-native-rook-sdk/-/react-native-rook-sdk-0.2.4.tgz#d8858423cc3d66c892e577ed9d8debe13a59f416"
-  integrity sha512-iffjAZ9gFWVL7iLf7yrYzF4mnBLDWnj0jUoNlvDX1zJ2SXnS3LPd8SJWkwT1GZ6XOMzZrrvfhegdm5eN+xIeZw==
+react-native-rook-sdk@^0.2.6:
+  version "0.2.6"
+  resolved "https://registry.yarnpkg.com/react-native-rook-sdk/-/react-native-rook-sdk-0.2.6.tgz#d4fdf4534cf5975ae765678c8db886bbc8cb2f0a"
+  integrity sha512-yV0Nw9e/BGbMiK35wfxJyjDExCNRraOzF5Eg7BfzMIhs64o+45l90AKpmcF2BsFkcwVD+i86f4XbsdcvOhtW2Q==
   dependencies:
     react-native-rook-logger-react-native "^0.3.10"
 

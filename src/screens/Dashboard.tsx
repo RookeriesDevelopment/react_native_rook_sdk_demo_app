@@ -11,16 +11,14 @@ import {
 export const Dashboard = () => {
   const [syncing, setSyncing] = useState(false);
 
-  const {ready, enableBackgroundForSummaries, enableBackgroundForEvents} =
-    useRookAppleHealth();
+  const {ready, enableBackGroundUpdates} = useRookAppleHealth();
 
   const {syncYesterdaySummaries} = useRookSummaries();
   const {syncYesterdayEvents} = useRookEvents();
 
   useEffect(() => {
     if (ready && Platform.OS === 'ios') {
-      enableBackgroundForEvents();
-      enableBackgroundForSummaries();
+      enableBackGroundUpdates();
     }
   }, [ready]);
 

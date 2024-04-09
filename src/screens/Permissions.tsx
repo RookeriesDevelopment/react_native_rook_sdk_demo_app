@@ -1,10 +1,23 @@
-import React from 'react';
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, {useEffect, useState} from 'react';
 import {View, Text, Button, StyleSheet, Platform} from 'react-native';
 import {useRookPermissions} from 'react-native-rook-sdk';
 
 export const Permissions = () => {
-  const {requestAllPermissions, requestAndroidBackgroundPermissions} =
-    useRookPermissions();
+  const [available, setAvailable] = useState(true);
+
+  const {
+    ready,
+    requestAllPermissions,
+    requestAndroidBackgroundPermissions,
+    checkAvailability,
+  } = useRookPermissions();
+
+  useEffect(() => {
+    checkAvailability().then(response => {
+      setAvailable(response === 'INSTALLED');
+    });
+  }, [ready]);
 
   const handleRequestPermissions = async () => {
     try {
@@ -31,23 +44,27 @@ export const Permissions = () => {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.message}>Please grant the necessary permissions</Text>
-      <Button title="Solicitar Permisos" onPress={handleRequestPermissions} />
+    available && (
+      <View style={styles.container}>
+        <Text style={styles.message}>
+          Please grant the necessary permissions
+        </Text>
+        <Button title="Solicitar Permisos" onPress={handleRequestPermissions} />
 
-      {Platform.OS === 'android' && (
-        <View style={styles.extra}>
-          <Text style={styles.message}>
-            Please grant the necessary permissions, to access to background
-            services
-          </Text>
-          <Button
-            title="Solicitar Permisos"
-            onPress={handleRequestBackgroundPermissions}
-          />
-        </View>
-      )}
-    </View>
+        {Platform.OS === 'android' && (
+          <View style={styles.extra}>
+            <Text style={styles.message}>
+              Please grant the necessary permissions, to access to background
+              services
+            </Text>
+            <Button
+              title="Solicitar Permisos"
+              onPress={handleRequestBackgroundPermissions}
+            />
+          </View>
+        )}
+      </View>
+    )
   );
 };
 
