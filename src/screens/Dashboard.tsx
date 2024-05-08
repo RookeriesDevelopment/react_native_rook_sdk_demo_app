@@ -13,8 +13,8 @@ export const Dashboard = () => {
 
   const {ready, enableBackGroundUpdates} = useRookAppleHealth();
 
-  const {syncYesterdaySummaries} = useRookSummaries();
-  const {syncYesterdayEvents} = useRookEvents();
+  const {syncSummaries} = useRookSummaries();
+  const {syncEvents} = useRookEvents();
 
   useEffect(() => {
     if (ready && Platform.OS === 'ios') {
@@ -28,8 +28,8 @@ export const Dashboard = () => {
 
       // This function will be deprecated in the version 1.0.0
       // we hard recommend to use the background synchronization
-      await syncYesterdaySummaries();
-      await syncYesterdayEvents();
+      await syncSummaries();
+      await syncEvents();
     } catch (error) {
       console.log(error);
     } finally {

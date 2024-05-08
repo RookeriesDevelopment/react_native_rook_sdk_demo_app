@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, {useEffect, useState} from 'react';
 import {View, Text, Button, StyleSheet, Platform} from 'react-native';
-import {useRookPermissions} from 'react-native-rook-sdk';
+import {useRookPermissions, useRookDataSources} from 'react-native-rook-sdk';
 
 export const Permissions = () => {
   const [available, setAvailable] = useState(true);
@@ -12,6 +12,8 @@ export const Permissions = () => {
     requestAndroidBackgroundPermissions,
     checkAvailability,
   } = useRookPermissions();
+
+  const {presentDataSourceView} = useRookDataSources();
 
   useEffect(() => {
     checkAvailability().then(response => {
@@ -43,6 +45,14 @@ export const Permissions = () => {
     }
   };
 
+  const handlePresent = async () => {
+    try {
+      await presentDataSourceView();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     available && (
       <View style={styles.container}>
@@ -50,6 +60,7 @@ export const Permissions = () => {
           Please grant the necessary permissions
         </Text>
         <Button title="Solicitar Permisos" onPress={handleRequestPermissions} />
+        <Button title="Connect Other permissions" onPress={handlePresent} />
 
         {Platform.OS === 'android' && (
           <View style={styles.extra}>
