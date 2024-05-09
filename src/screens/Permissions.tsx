@@ -2,6 +2,7 @@
 import React, {useEffect, useState} from 'react';
 import {View, Text, Button, StyleSheet, Platform} from 'react-native';
 import {useRookPermissions, useRookDataSources} from 'react-native-rook-sdk';
+import {storage} from '../utils/storage';
 
 export const Permissions = () => {
   const [available, setAvailable] = useState(true);
@@ -27,7 +28,7 @@ export const Permissions = () => {
       // Like async Storage to save it
       await requestAllPermissions();
 
-      // localStorage.setItem('permissionsRequested', true)
+      storage.set('ACCEPTED_PERMISSIONS', true);
     } catch (error) {
       console.log(error);
     }
@@ -35,11 +36,9 @@ export const Permissions = () => {
 
   const handleRequestBackgroundPermissions = async () => {
     try {
-      // if you need to know if the user has requested permissions you need to save it on your localState
-      // Like async Storage to save it
       await requestAndroidBackgroundPermissions();
 
-      // localStorage.setItem('permissionsRequested', true)
+      storage.set('ACCEPTED_YESTERDAY_SYNC', true);
     } catch (error) {
       console.log(error);
     }
@@ -59,7 +58,10 @@ export const Permissions = () => {
         <Text style={styles.message}>
           Please grant the necessary permissions
         </Text>
-        <Button title="Solicitar Permisos" onPress={handleRequestPermissions} />
+        <Button
+          title="Request Permissions"
+          onPress={handleRequestPermissions}
+        />
         <Button title="Connect Other permissions" onPress={handlePresent} />
 
         {Platform.OS === 'android' && (
@@ -69,7 +71,7 @@ export const Permissions = () => {
               services
             </Text>
             <Button
-              title="Solicitar Permisos"
+              title="Request Android Background Permissions"
               onPress={handleRequestBackgroundPermissions}
             />
           </View>

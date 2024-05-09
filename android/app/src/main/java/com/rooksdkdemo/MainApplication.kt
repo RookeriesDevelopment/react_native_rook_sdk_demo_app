@@ -13,9 +13,6 @@ import com.facebook.react.defaults.DefaultReactHost.getDefaultReactHost
 import com.facebook.react.defaults.DefaultReactNativeHost
 import com.facebook.react.flipper.ReactNativeFlipper
 import com.facebook.soloader.SoLoader
-import com.rookmotion.rook.sdk.domain.enums.SyncInstruction
-import com.rookmotion.rook.sdk.domain.environment.RookEnvironment
-import com.rookmotion.rook.sdk.framework.delegate.rookYesterdaySync
 
 class MainApplication : Application(), ReactApplication {
 

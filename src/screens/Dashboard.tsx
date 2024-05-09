@@ -4,14 +4,18 @@ import {Button} from 'react-native';
 import {Platform, StyleSheet, Text, View} from 'react-native';
 import {
   useRookAppleHealth,
+  useRookConfiguration,
   useRookEvents,
   useRookSummaries,
 } from 'react-native-rook-sdk';
+import {storage} from '../utils/storage';
 
 export const Dashboard = () => {
   const [syncing, setSyncing] = useState(false);
 
   const {ready, enableBackGroundUpdates} = useRookAppleHealth();
+
+  const {scheduleAndroidYesterdaySync} = useRookConfiguration();
 
   const {syncSummaries} = useRookSummaries();
   const {syncEvents} = useRookEvents();
@@ -19,6 +23,8 @@ export const Dashboard = () => {
   useEffect(() => {
     if (ready && Platform.OS === 'ios') {
       enableBackGroundUpdates();
+    } else {
+      tryToEnableYesterdaySync();
     }
   }, [ready]);
 
@@ -34,6 +40,23 @@ export const Dashboard = () => {
       console.log(error);
     } finally {
       setSyncing(false);
+    }
+  };
+
+  const tryToEnableYesterdaySync = async () => {
+    console.log('Attempting to enable yesterday sync...');
+
+    try {
+      const accepted = storage.getBoolean('ACCEPTED_YESTERDAY_SYNC') || false;
+
+      if (accepted) {
+        console.log('User accepted yesterday sync');
+        await scheduleAndroidYesterdaySync('oldest');
+      } else {
+        console.log('User did not accept yesterday sync');
+      }
+    } catch (error) {
+      console.error('Error retrieving data from AsyncStorage:', error);
     }
   };
 
