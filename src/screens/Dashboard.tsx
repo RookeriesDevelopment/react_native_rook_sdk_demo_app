@@ -32,7 +32,6 @@ export const Dashboard = () => {
     try {
       setSyncing(true);
 
-      // This function will be deprecated in the version 1.0.0
       // we hard recommend to use the background synchronization
       await syncSummaries();
       await syncEvents();
