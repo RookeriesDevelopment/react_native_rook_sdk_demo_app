@@ -18,7 +18,9 @@ export default function App() {
     <RookSyncGate
       environment="sandbox"
       clientUUID={credentials.uuid}
-      password={credentials.pdw}>
+      password={credentials.pwd}
+      enableLogs={true}
+      enableBackgroundSync>
       <NavigationContainer theme={DarkTheme}>
         <Stack.Navigator>
           <Stack.Screen

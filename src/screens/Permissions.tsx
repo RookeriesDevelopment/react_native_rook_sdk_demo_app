@@ -46,7 +46,7 @@ export const Permissions = () => {
 
   const handlePresent = async () => {
     try {
-      await presentDataSourceView();
+      await presentDataSourceView({redirectURL: 'https://example.com'});
     } catch (error) {
       console.log(error);
     }
@@ -62,7 +62,7 @@ export const Permissions = () => {
           title="Request Permissions"
           onPress={handleRequestPermissions}
         />
-        <Button title="Connect Other permissions" onPress={handlePresent} />
+        <Button title="Connect Other sources" onPress={handlePresent} />
 
         {Platform.OS === 'android' && (
           <View style={styles.extra}>

@@ -1,40 +1,48 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, {useEffect, useState} from 'react';
-import {Button} from 'react-native';
-import {Platform, StyleSheet, Text, View} from 'react-native';
+import {Button, Platform} from 'react-native';
+import {StyleSheet, Text, View} from 'react-native';
 import {
-  useRookAppleHealth,
-  useRookConfiguration,
-  useRookEvents,
   useRookSummaries,
+  useRookAndroidBackgroundSteps,
+  useRookAppleHealthVariables,
 } from 'react-native-rook-sdk';
-import {storage} from '../utils/storage';
+import {getYesterdayDate} from '../utils/getYesterdayDate';
+import {useIsFocused} from '@react-navigation/native';
 
 export const Dashboard = () => {
   const [syncing, setSyncing] = useState(false);
+  const [currentSteps, setCurrentSteps] = useState('');
 
-  const {ready, enableBackGroundUpdates} = useRookAppleHealth();
+  const isFocused = useIsFocused();
 
-  const {scheduleAndroidYesterdaySync} = useRookConfiguration();
+  const {syncBodySummary, syncPhysicalSummary, syncSleepSummary} =
+    useRookSummaries();
 
-  const {syncSummaries} = useRookSummaries();
-  const {syncEvents} = useRookEvents();
+  const {syncTodayAndroidStepsCount, syncTodayHealthConnectStepsCount} =
+    useRookAndroidBackgroundSteps();
+
+  const {getTodaySteps} = useRookAppleHealthVariables();
 
   useEffect(() => {
-    if (ready && Platform.OS === 'ios') {
-      enableBackGroundUpdates();
-    } else {
-      tryToEnableYesterdaySync();
-    }
-  }, [ready]);
+    syncSteps();
+  }, [isFocused]);
 
   const handleManualSync = async () => {
     try {
       setSyncing(true);
 
-      // we hard recommend to use the background synchronization
-      await syncSummaries();
-      await syncEvents();
+      const yesterdayDate = getYesterdayDate();
+
+      // we hardly recommend to use the background synchronization
+      // just set in true the flag of enableBackgroundSync in the RookSyncGate
+      const [body, physical, sleep] = await Promise.all([
+        syncBodySummary(yesterdayDate),
+        syncPhysicalSummary(yesterdayDate),
+        syncSleepSummary(yesterdayDate),
+      ]);
+
+      console.log({body, physical, sleep});
     } catch (error) {
       console.log(error);
     } finally {
@@ -42,26 +50,31 @@ export const Dashboard = () => {
     }
   };
 
-  const tryToEnableYesterdaySync = async () => {
-    console.log('Attempting to enable yesterday sync...');
-
+  const syncSteps = async () => {
     try {
-      const accepted = storage.getBoolean('ACCEPTED_YESTERDAY_SYNC') || false;
+      setCurrentSteps('loading...');
+      if (Platform.OS === 'android') {
+        const hcSteps = await syncTodayHealthConnectStepsCount();
+        const deviceSteps = await syncTodayAndroidStepsCount();
 
-      if (accepted) {
-        console.log('User accepted yesterday sync');
-        await scheduleAndroidYesterdaySync('oldest');
+        setCurrentSteps(
+          `Health Connect ${hcSteps} and device steps ${deviceSteps}`,
+        );
       } else {
-        console.log('User did not accept yesterday sync');
+        const steps = await getTodaySteps();
+        setCurrentSteps(`Current steps ${steps}`);
       }
     } catch (error) {
-      console.error('Error retrieving data from AsyncStorage:', error);
+      console.log(error);
+      setCurrentSteps('An error occurred, grant permissions');
     }
   };
 
   return (
     <View style={styles.container}>
       <Text style={styles.message}>Dashboard</Text>
+      <Text style={styles.message}>{currentSteps}</Text>
+
       <Button
         title={syncing ? 'Syncing' : 'Manual Sync'}
         disabled={syncing}
