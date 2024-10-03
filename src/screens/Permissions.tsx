@@ -1,18 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, {useEffect, useState} from 'react';
-import {
-  View,
-  Text,
-  Button,
-  StyleSheet,
-  Platform,
-  NativeEventEmitter,
-} from 'react-native';
-import {
-  useRookPermissions,
-  useRookDataSources,
-  getRookModule,
-} from 'react-native-rook-sdk';
+import {View, Text, Button, StyleSheet, Platform} from 'react-native';
+import {useRookPermissions, useRookDataSources} from 'react-native-rook-sdk';
 import {storage} from '../utils/storage';
 
 export const Permissions = () => {
@@ -32,43 +21,6 @@ export const Permissions = () => {
       setAvailable(response === 'INSTALLED');
     });
   }, [ready]);
-
-  useEffect(() => {
-    const rookModule = getRookModule();
-    const eventEmitter = new NativeEventEmitter(rookModule);
-
-    // Subscribe to the event
-    const subscription = eventEmitter.addListener(
-      'ROOK_NOTIFICATION',
-      handleRookNotification,
-    );
-
-    // Clean up subscription when the component unmounts
-    return () => {
-      subscription.remove();
-    };
-  }, []);
-
-  const handleRookNotification = (notification: any) => {
-    const {type, value, message, ...rest} = notification;
-
-    switch (type) {
-      case 'ROOK_BACKGROUND_ANDROID_PERMISSIONS':
-        console.log(`Background permissions on Android: ${value}`);
-        break;
-      case 'ROOK_HEALTH_CONNECT_PERMISSIONS':
-        console.log(`Health Connect permissions: ${value}`);
-        break;
-      case 'ROOK_BACKGROUND_ENABLED':
-        console.log(`Background services enabled: ${value}`);
-        break;
-      case 'ROOK_APPLE_HEALTH_BACKGROUND_ERROR':
-        console.log(`Background services enabled: ${rest}`);
-        break;
-      default:
-        console.log(`Unknown notification: ${{rest, message, value, type}}`);
-    }
-  };
 
   const handleRequestPermissions = async () => {
     try {
