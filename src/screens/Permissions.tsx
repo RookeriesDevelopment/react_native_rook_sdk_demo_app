@@ -17,9 +17,11 @@ export const Permissions = () => {
   const {presentDataSourceView} = useRookDataSources();
 
   useEffect(() => {
-    checkAvailability().then(response => {
-      setAvailable(response === 'INSTALLED');
-    });
+    if (ready) {
+      checkAvailability().then(response => {
+        setAvailable(response === 'INSTALLED');
+      });
+    }
   }, [ready]);
 
   const handleRequestPermissions = async () => {

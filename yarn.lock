@@ -5670,10 +5670,10 @@ react-native-mmkv@^2.12.2:
   resolved "https://registry.yarnpkg.com/react-native-mmkv/-/react-native-mmkv-2.12.2.tgz#4bba0f5f04e2cf222494cce3a9794ba6a4894dee"
   integrity sha512-6058Aq0p57chPrUutLGe9fYoiDVDNMU2PKV+lLFUJ3GhoHvUrLdsS1PDSCLr00yqzL4WJQ7TTzH+V8cpyrNcfg==
 
-react-native-rook-sdk@^0.7.0:
-  version "0.7.0"
-  resolved "https://registry.yarnpkg.com/react-native-rook-sdk/-/react-native-rook-sdk-0.7.0.tgz#180625a38429ac21bd2d222f688aa98a751509aa"
-  integrity sha512-Ao6ilDCzWI3hH4hbhu9xfL24GxRJxB07qBZT98bFN88S7jBLZ05rprNw4Xzqr6ptVOT1KPpf7RvDGZueBuAAZQ==
+react-native-rook-sdk@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/react-native-rook-sdk/-/react-native-rook-sdk-1.0.1.tgz#ddcef857925fd240fee5aa4e36015e670b7bbbc0"
+  integrity sha512-7TllRBCGaYDytA3rSmbuK8TTHyQFjxKuVsg0Y/piVkPhkYKVHFVa5QoV2vjbXIbkzoPk9DjsP2B6lJ/GLxrNDQ==
 
 react-native-safe-area-context@^4.9.0:
   version "4.9.0"
