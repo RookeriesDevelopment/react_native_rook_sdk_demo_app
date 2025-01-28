@@ -12,6 +12,7 @@ export const Permissions = () => {
     requestAllPermissions,
     requestAndroidBackgroundPermissions,
     checkAvailability,
+    appleHealthHasPermissions,
   } = useRookPermissions();
 
   const {presentDataSourceView} = useRookDataSources();
@@ -54,6 +55,15 @@ export const Permissions = () => {
     }
   };
 
+  const handleStatus = async () => {
+    try {
+      const status = await appleHealthHasPermissions();
+      console.log(status);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     available && (
       <View style={styles.container}>
@@ -64,6 +74,7 @@ export const Permissions = () => {
           title="Request Permissions"
           onPress={handleRequestPermissions}
         />
+        <Button title="Apple Permissions status" onPress={handleStatus} />
         <Button title="Connect Other sources" onPress={handlePresent} />
 
         {Platform.OS === 'android' && (
