@@ -2,7 +2,6 @@
 import React, {useEffect, useState} from 'react';
 import {View, Text, Button, StyleSheet, Platform} from 'react-native';
 import {useRookPermissions, useRookDataSources} from 'react-native-rook-sdk';
-import {storage} from '../utils/storage';
 
 export const Permissions = () => {
   const [available, setAvailable] = useState(true);
@@ -29,9 +28,7 @@ export const Permissions = () => {
     try {
       // if you need to know if the user has requested permissions you need to save it on your localState
       // Like async Storage to save it
-      const r = await requestAllPermissions();
-
-      storage.set('ACCEPTED_PERMISSIONS', r);
+      await requestAllPermissions();
     } catch (error) {
       console.log(error);
     }
@@ -39,9 +36,7 @@ export const Permissions = () => {
 
   const handleRequestBackgroundPermissions = async () => {
     try {
-      const r = await requestAndroidBackgroundPermissions();
-
-      storage.set('ACCEPTED_YESTERDAY_SYNC', r);
+      await requestAndroidBackgroundPermissions();
     } catch (error) {
       console.log(error);
     }
