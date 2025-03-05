@@ -6,6 +6,7 @@ import {
   useRookSummaries,
   useRookAndroidBackgroundSteps,
   useRookAppleHealthVariables,
+  useRookEvents,
 } from 'react-native-rook-sdk';
 import {getYesterdayDate} from '../utils/getYesterdayDate';
 import {useIsFocused} from '@react-navigation/native';
@@ -13,8 +14,11 @@ import {useIsFocused} from '@react-navigation/native';
 export const Dashboard = () => {
   const [syncing, setSyncing] = useState(false);
   const [currentSteps, setCurrentSteps] = useState('');
+  const [currentCalories, setCurrentCalories] = useState('');
 
   const isFocused = useIsFocused();
+
+  const {syncTodayCaloriesCount} = useRookEvents();
 
   const {syncBodySummary, syncPhysicalSummary, syncSleepSummary} =
     useRookSummaries();
@@ -26,6 +30,7 @@ export const Dashboard = () => {
 
   useEffect(() => {
     syncSteps();
+    syncCalories();
   }, [isFocused]);
 
   const handleManualSync = async () => {
@@ -65,8 +70,17 @@ export const Dashboard = () => {
         setCurrentSteps(`Current steps ${steps}`);
       }
     } catch (error) {
-      console.log(error);
+      console.error(error);
       setCurrentSteps('An error occurred, grant permissions');
+    }
+  };
+
+  const syncCalories = async () => {
+    try {
+      const result = await syncTodayCaloriesCount();
+      setCurrentCalories(`Calories ${JSON.stringify(result)}`);
+    } catch (error) {
+      console.error(error);
     }
   };
 
@@ -74,6 +88,7 @@ export const Dashboard = () => {
     <View style={styles.container}>
       <Text style={styles.message}>Dashboard</Text>
       <Text style={styles.message}>{currentSteps}</Text>
+      <Text style={styles.message}>{currentCalories}</Text>
 
       <Button
         title={syncing ? 'Syncing' : 'Manual Sync'}
