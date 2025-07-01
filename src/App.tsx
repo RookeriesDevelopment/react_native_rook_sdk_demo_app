@@ -2,6 +2,7 @@ import * as React from 'react';
 import {NavigationContainer, DarkTheme} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {Login} from './screens/Login';
+import {Sources} from './screens/Sources';
 import {RookSyncGate} from 'react-native-rook-sdk';
 import {credentials} from './utils/credentials';
 import {HomeNavigation} from './navigators/HomeNavigation';
@@ -11,6 +12,7 @@ const Stack = createNativeStackNavigator();
 export type RootStackParamList = {
   Home: {id: number} | undefined;
   Dashboard: {id: number} | undefined;
+  Sources: {id: number} | undefined;
 };
 
 export default function App() {
@@ -32,6 +34,11 @@ export default function App() {
             name="Dashboard"
             component={HomeNavigation}
             options={{headerShown: false}}
+          />
+          <Stack.Screen
+            name="Sources"
+            component={Sources}
+            options={{headerShown: true}}
           />
         </Stack.Navigator>
       </NavigationContainer>

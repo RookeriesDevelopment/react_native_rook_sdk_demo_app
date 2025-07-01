@@ -3,12 +3,11 @@ import React, {useEffect, useState} from 'react';
 import {Button, Platform} from 'react-native';
 import {StyleSheet, Text, View} from 'react-native';
 import {
-  useRookSummaries,
+  useRookEvents, 
+  useRookSync,
   useRookAndroidBackgroundSteps,
   useRookAppleHealthVariables,
-  useRookEvents,
 } from 'react-native-rook-sdk';
-import {getYesterdayDate} from '../utils/getYesterdayDate';
 import {useIsFocused} from '@react-navigation/native';
 
 export const Dashboard = () => {
@@ -18,10 +17,9 @@ export const Dashboard = () => {
 
   const isFocused = useIsFocused();
 
-  const {syncTodayCaloriesCount} = useRookEvents();
+  const { syncTodayCaloriesCount } = useRookEvents() 
 
-  const {syncBodySummary, syncPhysicalSummary, syncSleepSummary} =
-    useRookSummaries();
+  const { sync } = useRookSync()
 
   const {syncTodayAndroidStepsCount, syncTodayHealthConnectStepsCount} =
     useRookAndroidBackgroundSteps();
@@ -37,17 +35,17 @@ export const Dashboard = () => {
     try {
       setSyncing(true);
 
-      const yesterdayDate = getYesterdayDate();
+      sync((error, result) => {
+        if (error) {
+          console.error(error)
+        }
+        else {
+          console.log("Data synced", result)
+        } 
 
-      // we hardly recommend to use the background synchronization
-      // just set in true the flag of enableBackgroundSync in the RookSyncGate
-      const [body, physical, sleep] = await Promise.all([
-        syncBodySummary(yesterdayDate),
-        syncPhysicalSummary(yesterdayDate),
-        syncSleepSummary(yesterdayDate),
-      ]);
+        setSyncing(false)
+      })
 
-      console.log({body, physical, sleep});
     } catch (error) {
       console.log(error);
     } finally {

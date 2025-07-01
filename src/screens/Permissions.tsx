@@ -2,9 +2,15 @@
 import React, {useEffect, useState} from 'react';
 import {View, Text, Button, StyleSheet, Platform} from 'react-native';
 import {useRookPermissions, useRookDataSources} from 'react-native-rook-sdk';
+import {useNavigation} from '@react-navigation/native';
+import {RootStackParamList} from '../App';
+import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 
 export const Permissions = () => {
   const [available, setAvailable] = useState(true);
+
+  const navigation =
+    useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
   const {
     ready,
@@ -13,8 +19,6 @@ export const Permissions = () => {
     checkAvailability,
     appleHealthHasPermissions,
   } = useRookPermissions();
-
-  const {presentDataSourceView} = useRookDataSources();
 
   useEffect(() => {
     if (ready) {
@@ -42,14 +46,6 @@ export const Permissions = () => {
     }
   };
 
-  const handlePresent = async () => {
-    try {
-      await presentDataSourceView({redirectURL: 'https://example.com'});
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
   const handleStatus = async () => {
     try {
       const status = await appleHealthHasPermissions();
@@ -70,7 +66,10 @@ export const Permissions = () => {
           onPress={handleRequestPermissions}
         />
         <Button title="Apple Permissions status" onPress={handleStatus} />
-        <Button title="Connect Other sources" onPress={handlePresent} />
+        <Button
+          title="Connect Other sources"
+          onPress={() => navigation.navigate('Sources')}
+        />
 
         {Platform.OS === 'android' && (
           <View style={styles.extra}>
