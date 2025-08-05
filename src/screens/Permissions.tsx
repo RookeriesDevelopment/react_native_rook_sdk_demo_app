@@ -1,7 +1,7 @@
-/* eslint-disable react-hooks/exhaustive-deps */
+
 import React, {useEffect, useState} from 'react';
 import {View, Text, Button, StyleSheet, Platform} from 'react-native';
-import {useRookPermissions, useRookDataSources} from 'react-native-rook-sdk';
+import {useRookPermissions} from 'react-native-rook-sdk';
 import {useNavigation} from '@react-navigation/native';
 import {RootStackParamList} from '../App';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
@@ -12,17 +12,11 @@ export const Permissions = () => {
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
-  const {
-    ready,
-    requestAllPermissions,
-    requestAndroidBackgroundPermissions,
-    checkAvailability,
-    appleHealthHasPermissions,
-  } = useRookPermissions();
+  const { ready, checkSamsungAvailability, requestSamsungHealthPermissions  } = useRookPermissions();
 
   useEffect(() => {
     if (ready) {
-      checkAvailability().then(response => {
+      checkSamsungAvailability().then(response => {
         setAvailable(response === 'INSTALLED');
       });
     }
@@ -32,57 +26,32 @@ export const Permissions = () => {
     try {
       // if you need to know if the user has requested permissions you need to save it on your localState
       // Like async Storage to save it
-      await requestAllPermissions();
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const handleRequestBackgroundPermissions = async () => {
-    try {
-      await requestAndroidBackgroundPermissions();
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const handleStatus = async () => {
-    try {
-      const status = await appleHealthHasPermissions();
-      console.log(status);
+      await requestSamsungHealthPermissions();
     } catch (error) {
       console.log(error);
     }
   };
 
   return (
-    available && (
+    available ? (
       <View style={styles.container}>
         <Text style={styles.message}>
           Please grant the necessary permissions
         </Text>
+
         <Button
-          title="Request Permissions"
+          title="Request Samsung Permissions"
           onPress={handleRequestPermissions}
         />
-        <Button title="Apple Permissions status" onPress={handleStatus} />
+
         <Button
           title="Connect Other sources"
           onPress={() => navigation.navigate('Sources')}
         />
-
-        {Platform.OS === 'android' && (
-          <View style={styles.extra}>
-            <Text style={styles.message}>
-              Please grant the necessary permissions, to access to background
-              services
-            </Text>
-            <Button
-              title="Request Android Background Permissions"
-              onPress={handleRequestBackgroundPermissions}
-            />
-          </View>
-        )}
+      </View>
+    ) : (
+      <View style = { styles.container}>
+        <Text style = { styles.message }>Samsung is not available</Text>
       </View>
     )
   );

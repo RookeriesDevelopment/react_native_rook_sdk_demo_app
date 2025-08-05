@@ -15,6 +15,8 @@ export type RootStackParamList = {
   Sources: {id: number} | undefined;
 };
 
+console.log({credentials});
+
 export default function App() {
   return (
     <RookSyncGate

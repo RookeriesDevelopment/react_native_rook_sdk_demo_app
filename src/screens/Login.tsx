@@ -19,9 +19,13 @@ export const Login = () => {
 
   const [loading, setLoading] = useState(false);
   const [userID, setUserID] = useState('');
-  const [password, setPassword] = useState('');
 
-  const {ready, updateUserID} = useRookConfiguration();
+  const {ready, getUserID, updateUserID} = useRookConfiguration();
+
+  useEffect(() => {
+    if(ready) {isAlreadyLoggedIn();}
+  }, [ready]);
+
 
   useEffect(() => {
     const rookModule = getRookModule();
@@ -60,11 +64,23 @@ export const Login = () => {
     }
   };
 
+  const isAlreadyLoggedIn = async () => {
+    try {
+
+      const user = await getUserID();
+
+      if (user) {navigation.navigate('Dashboard');}
+
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   const handleLogin = async () => {
     try {
       setLoading(true);
 
-      await yourLoginService(`${userID}:${password}`);
+      await yourLoginService(`${userID}`);
       await updateUserID(userID);
 
       navigation.navigate('Dashboard');
@@ -84,12 +100,7 @@ export const Login = () => {
         keyboardType="email-address"
         onChangeText={text => setUserID(text)}
       />
-      <TextInput
-        style={styles.input}
-        placeholder="Contraseña"
-        secureTextEntry={true}
-        onChangeText={text => setPassword(text)}
-      />
+
       <Button
         title={loading ? 'Loading . . .' : 'Log in'}
         disabled={loading}

@@ -109,6 +109,7 @@ android {
 dependencies {
     // The version of react-native is set by the React Native Gradle Plugin
     implementation("com.facebook.react:react-android")
+    implementation(files("$rootDir/libs/samsung-health-data-api-1.0.0-b2.aar"))
 
     if (hermesEnabled.toBoolean()) {
         implementation("com.facebook.react:hermes-android")

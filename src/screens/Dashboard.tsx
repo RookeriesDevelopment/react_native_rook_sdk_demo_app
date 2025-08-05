@@ -1,12 +1,12 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, {useEffect, useState} from 'react';
-import {Button, Platform} from 'react-native';
+import {Button } from 'react-native';
 import {StyleSheet, Text, View} from 'react-native';
 import {
-  useRookEvents, 
   useRookSync,
-  useRookAndroidBackgroundSteps,
-  useRookAppleHealthVariables,
+  useRookVariables,
+  useRookPermissions,
+  SDKDataSource
 } from 'react-native-rook-sdk';
 import {useIsFocused} from '@react-navigation/native';
 
@@ -16,15 +16,11 @@ export const Dashboard = () => {
   const [currentCalories, setCurrentCalories] = useState('');
 
   const isFocused = useIsFocused();
-
-  const { syncTodayCaloriesCount } = useRookEvents() 
+  
+  const { checkSamsungAvailability } = useRookPermissions()
+  const { getTodaySteps, getTodayCalories } = useRookVariables()
 
   const { sync } = useRookSync()
-
-  const {syncTodayAndroidStepsCount, syncTodayHealthConnectStepsCount} =
-    useRookAndroidBackgroundSteps();
-
-  const {getTodaySteps} = useRookAppleHealthVariables();
 
   useEffect(() => {
     syncSteps();
@@ -35,14 +31,9 @@ export const Dashboard = () => {
     try {
       setSyncing(true);
 
-      sync((error, result) => {
-        if (error) {
-          console.error(error)
-        }
-        else {
-          console.log("Data synced", result)
-        } 
-
+      sync((result) => {
+        console.log(result)
+      
         setSyncing(false)
       })
 
@@ -56,16 +47,17 @@ export const Dashboard = () => {
   const syncSteps = async () => {
     try {
       setCurrentSteps('loading...');
-      if (Platform.OS === 'android') {
-        const hcSteps = await syncTodayHealthConnectStepsCount();
-        const deviceSteps = await syncTodayAndroidStepsCount();
+
+      const samsungAvailability = await checkSamsungAvailability()
+
+      if (samsungAvailability === "INSTALLED") {
+        const steps = await getTodaySteps(SDKDataSource.SAMSUNG_HEALTH)
 
         setCurrentSteps(
-          `Health Connect ${hcSteps} and device steps ${deviceSteps}`,
+          `Samsung Health steps: ${steps}`,
         );
       } else {
-        const steps = await getTodaySteps();
-        setCurrentSteps(`Current steps ${steps}`);
+        setCurrentSteps(`Samsung health is not available`);
       }
     } catch (error) {
       console.error(error);
@@ -75,8 +67,17 @@ export const Dashboard = () => {
 
   const syncCalories = async () => {
     try {
-      const result = await syncTodayCaloriesCount();
-      setCurrentCalories(`Calories ${JSON.stringify(result)}`);
+      const samsungAvailability = await checkSamsungAvailability()
+
+      if (samsungAvailability === "INSTALLED") {
+        const calories = await getTodayCalories(SDKDataSource.SAMSUNG_HEALTH)
+
+        setCurrentCalories(
+          `Samsung Health calories: ${JSON.stringify(calories)}`,
+        );
+      } else {
+        setCurrentCalories(`Samsung health is not available`);
+      }
     } catch (error) {
       console.error(error);
     }
