@@ -1,13 +1,32 @@
- import React from 'react';
+ import React, {useEffect} from 'react';
  import { Text, View, StyleSheet, SafeAreaView } from 'react-native';
  import {useNavigation} from '@react-navigation/native';
+ import {NativeStackNavigationProp} from '@react-navigation/native-stack';
+ import { useRookConfiguration } from 'react-native-rook-sdk'
  import { ContinueButton } from '../components/ContinueButton'
  import {RootStackParamList} from '../App';
- import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 
  export const Splash = () => {
    const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+
+   const {ready, getUserID } = useRookConfiguration();
+
+   useEffect(() => {
+     if(ready) isAlreadyLoggedIn()
+   }, [ready])
+
+   const isAlreadyLoggedIn = async () => {
+      try {
+
+        const user = await getUserID();
+
+        if (user) {navigation.navigate('Dashboard');}
+
+      } catch (error) {
+        console.error(error);
+      }
+    };
 
    return (
      <View style = { styles.container }>
