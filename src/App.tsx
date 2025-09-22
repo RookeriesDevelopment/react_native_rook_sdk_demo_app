@@ -1,8 +1,9 @@
 import * as React from 'react';
-import {NavigationContainer, DarkTheme} from '@react-navigation/native';
+import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {Login} from './screens/Login';
 import {Sources} from './screens/Sources';
+import {Splash} from './screens/Splash'
 import {RookSyncGate} from 'react-native-rook-sdk';
 import {credentials} from './utils/credentials';
 import {HomeNavigation} from './navigators/HomeNavigation';
@@ -10,7 +11,8 @@ import {HomeNavigation} from './navigators/HomeNavigation';
 const Stack = createNativeStackNavigator();
 
 export type RootStackParamList = {
-  Home: {id: number} | undefined;
+  Splash: {id: number} | undefined
+  Login: {id: number} | undefined;
   Dashboard: {id: number} | undefined;
   Sources: {id: number} | undefined;
 };
@@ -24,10 +26,15 @@ export default function App() {
       password={credentials.pwd}
       enableLogs={true}
       enableBackgroundSync>
-      <NavigationContainer theme={DarkTheme}>
+      <NavigationContainer>
         <Stack.Navigator>
           <Stack.Screen
-            name="Home"
+            name="Splash"
+            component={Splash}
+            options={{headerShown: false}}
+          />
+          <Stack.Screen
+            name="Login"
             component={Login}
             options={{headerShown: false}}
           />
