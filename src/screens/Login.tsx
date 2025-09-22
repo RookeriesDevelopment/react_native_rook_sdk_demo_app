@@ -3,9 +3,13 @@ import {
   View,
   Text,
   TextInput,
-  Button,
+  Pressable,
   StyleSheet,
   NativeEventEmitter,
+  ImageBackground,
+  KeyboardAvoidingView,
+  Platform,
+  Keyboard
 } from 'react-native';
 import {yourLoginService} from '../utils/yourLoginService';
 import {getRookModule, useRookConfiguration} from 'react-native-rook-sdk';
@@ -78,6 +82,7 @@ export const Login = () => {
 
   const handleLogin = async () => {
     try {
+      Keyboard.dismiss()
       setLoading(true);
 
       await yourLoginService(`${userID}`);
@@ -91,50 +96,71 @@ export const Login = () => {
     }
   };
 
-  return ready ? (
-    <View style={styles.container}>
-      <Text style={styles.title}>Inicio de Sesión</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="User ID"
-        keyboardType="email-address"
-        onChangeText={text => setUserID(text)}
-      />
+  return (
+    <ImageBackground
+      source = { require('../../assets/images/bg.png') }
+      style = { styles.background }
+    >
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={ styles.keyboardView } 
+      >
+        <View style = { styles.formContainer }>
+          <Text style = { styles.title }>
+            Get Started
+          </Text>
 
-      <Button
-        title={loading ? 'Loading . . .' : 'Log in'}
-        disabled={loading}
-        onPress={handleLogin}
-      />
-    </View>
-  ) : (
-    <View style={styles.container}>
-      <Text style={styles.title}>Loading</Text>
-    </View>
-  );
+          <TextInput
+            style = { styles.input }
+            placeholder = "Enter your phone number"
+          /> 
+
+          <Pressable style = { styles.button }>
+            <Text style = { styles.buttonText }>Next</Text>
+          </Pressable>
+        </View>
+      </KeyboardAvoidingView>
+    </ImageBackground>
+  )
 };
 
 const styles = StyleSheet.create({
-  container: {
+  background: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: 20,
+    resizeMode: "cover",
+  },
+  formContainer: { 
+    paddingTop: "2.5%",
+    paddingHorizontal: "5%",
+    backgroundColor: "white",
+    borderRadius: 20,
+    paddingBottom: 40,
   },
   title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
-    color: 'white',
+    fontFamily: "Poppins",
+    fontSize: 26,
+    fontWeight: "bold"
   },
   input: {
-    width: '100%',
-    height: 40,
-    color: 'white',
-    borderColor: 'gray',
+    marginVertical: 20,
+    borderColor: "#C8BEBE",
     borderWidth: 1,
-    borderRadius: 8,
-    marginBottom: 10,
-    paddingHorizontal: 10,
+    padding: 8,
+    borderRadius: 10,
+  },
+  button: {
+    backgroundColor: "#A0E984",
+    paddingVertical: 15,
+    paddingHorizontal: "5%",
+    alignItems: 'center',
+    borderRadius: 10
+  },
+  buttonText: {
+    fontFamily: "Poppins",
+    fontSize: 15,
+  },
+keyboardView: {
+    flex: 1,
+    justifyContent: 'flex-end',
   },
 });
