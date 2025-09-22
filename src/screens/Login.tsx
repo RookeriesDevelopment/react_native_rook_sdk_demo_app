@@ -9,7 +9,8 @@ import {
   ImageBackground,
   KeyboardAvoidingView,
   Platform,
-  Keyboard
+  Keyboard,
+  ActivityIndicator
 } from 'react-native';
 import {yourLoginService} from '../utils/yourLoginService';
 import {getRookModule, useRookConfiguration} from 'react-native-rook-sdk';
@@ -113,11 +114,24 @@ export const Login = () => {
           <TextInput
             style = { styles.input }
             placeholder = "Enter your phone number"
+            keyboardType = "phone-pad"
+            onChangeText={text => setUserID(text)}
           /> 
 
-          <Pressable style = { styles.button }>
-            <Text style = { styles.buttonText }>Next</Text>
-          </Pressable>
+          { loading 
+            ? (
+              <ActivityIndicator />
+            ) 
+            : (
+              <Pressable 
+                style = { styles.button }
+                onPress = {handleLogin}
+              >
+                <Text style = { styles.buttonText }>Next</Text>
+              </Pressable>
+            ) 
+          }
+
         </View>
       </KeyboardAvoidingView>
     </ImageBackground>
