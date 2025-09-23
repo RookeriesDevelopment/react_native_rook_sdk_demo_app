@@ -14,7 +14,7 @@ export type RootStackParamList = {
   Splash: {id: number} | undefined
   Login: {id: number} | undefined;
   Dashboard: {id: number} | undefined;
-  Sources: {prev: string} | undefined;
+  Sources: {prev?: string} | undefined;
 };
 
 

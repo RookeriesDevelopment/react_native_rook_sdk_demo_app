@@ -27,7 +27,11 @@ export const HomeNavigation = () => {
         tabBarInactiveTintColor: '#ABB7C2',
       })}>
 
-      <Tab.Screen name="Home" component={Dashboard} />
+      <Tab.Screen 
+        name="Home" 
+        component={Dashboard} 
+        options = {{ headerShown: false}}
+      />
 
       <Tab.Screen 
         name="Settings" 

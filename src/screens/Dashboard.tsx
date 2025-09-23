@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, {useEffect, useState} from 'react';
 import {Button } from 'react-native';
-import {StyleSheet, Text, View} from 'react-native';
+import {StyleSheet, Text, View, SafeAreaView} from 'react-native';
 import {
   useRookSync,
   useRookVariables,
@@ -84,34 +84,25 @@ export const Dashboard = () => {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.message}>Dashboard</Text>
-      <Text style={styles.message}>{currentSteps}</Text>
-      <Text style={styles.message}>{currentCalories}</Text>
-
-      <Button
-        title={syncing ? 'Syncing' : 'Manual Sync'}
-        disabled={syncing}
-        onPress={handleManualSync}
-      />
-    </View>
+    <SafeAreaView style={styles.container}>
+      <Text style={styles.title}>How your journey goes...</Text>
+      <Text style={styles.message}>Move, rest, charge and repeat every day</Text>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: 20,
+    marginHorizontal: "2.5%",
+  },
+  title: {
+    fontFamily: 'Poppins',
+    fontWeight: 'bold',
+    fontSize: 24
   },
   message: {
-    fontSize: 18,
+    fontSize: 16,
     marginBottom: 20,
-    textAlign: 'center',
-    color: 'white',
-  },
-  extra: {
-    marginTop: 50,
   },
 });
