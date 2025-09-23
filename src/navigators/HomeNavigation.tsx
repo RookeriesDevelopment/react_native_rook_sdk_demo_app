@@ -23,8 +23,8 @@ export const HomeNavigation = () => {
           // You can return any component that you like here!
           return <Ionicons name={iconName} size={size} color={color} />;
         },
-        tabBarActiveTintColor: 'tomato',
-        tabBarInactiveTintColor: 'gray',
+        tabBarActiveTintColor: '#A0E984',
+        tabBarInactiveTintColor: '#ABB7C2',
       })}>
       <Tab.Screen name="Home" component={Dashboard} />
       <Tab.Screen name="Permissions" component={Permissions} />
