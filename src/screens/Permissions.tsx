@@ -15,7 +15,7 @@ export const Permissions = () => {
   const { ready, checkSamsungAvailability, requestSamsungHealthPermissions  } = useRookPermissions();
 
   useEffect(() => {
-    if (ready) {
+    if (ready && Platform.OS === 'android') {
       checkSamsungAvailability().then(response => {
         setAvailable(response === 'INSTALLED');
       });

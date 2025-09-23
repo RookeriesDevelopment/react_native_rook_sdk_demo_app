@@ -1,9 +1,9 @@
 /* eslint-disable react/no-unstable-nested-components */
 import React from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import {Dashboard} from '../screens/Dashboard';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import {Permissions} from '../screens/Permissions';
+import {Dashboard} from '../screens/Dashboard';
+import {Settings} from '../screens/Settings'
 
 const Tab = createBottomTabNavigator();
 
@@ -16,7 +16,7 @@ export const HomeNavigation = () => {
 
           if (route.name === 'Home') {
             iconName = focused ? 'home' : 'home-outline';
-          } else if (route.name === 'Permissions') {
+          } else if (route.name === 'Settings') {
             iconName = focused ? 'settings' : 'settings-outline';
           }
 
@@ -26,8 +26,14 @@ export const HomeNavigation = () => {
         tabBarActiveTintColor: '#A0E984',
         tabBarInactiveTintColor: '#ABB7C2',
       })}>
+
       <Tab.Screen name="Home" component={Dashboard} />
-      <Tab.Screen name="Permissions" component={Permissions} />
+
+      <Tab.Screen 
+        name="Settings" 
+        component={Settings} 
+        options={{ headerShown: false}} 
+      />
     </Tab.Navigator>
   );
 };
