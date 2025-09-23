@@ -14,7 +14,7 @@ export type RootStackParamList = {
   Splash: {id: number} | undefined
   Login: {id: number} | undefined;
   Dashboard: {id: number} | undefined;
-  Sources: {id: number} | undefined;
+  Sources: {prev: string} | undefined;
 };
 
 
@@ -46,7 +46,7 @@ export default function App() {
           <Stack.Screen
             name="Sources"
             component={Sources}
-            options={{headerShown: true}}
+            options={{headerShown: false}}
           />
         </Stack.Navigator>
       </NavigationContainer>

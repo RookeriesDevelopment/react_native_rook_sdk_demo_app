@@ -26,12 +26,7 @@ export const Login = () => {
   const [loading, setLoading] = useState(false);
   const [userID, setUserID] = useState('');
 
-  const {ready, getUserID, updateUserID} = useRookConfiguration();
-
-  useEffect(() => {
-    if(ready) {isAlreadyLoggedIn();}
-  }, [ready]);
-
+  const {updateUserID} = useRookConfiguration();
 
   useEffect(() => {
     const rookModule = getRookModule();
@@ -70,18 +65,6 @@ export const Login = () => {
     }
   };
 
-  const isAlreadyLoggedIn = async () => {
-    try {
-
-      const user = await getUserID();
-
-      if (user) {navigation.navigate('Dashboard');}
-
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
   const handleLogin = async () => {
     try {
       Keyboard.dismiss()
@@ -90,7 +73,7 @@ export const Login = () => {
       await yourLoginService(`${userID}`);
       await updateUserID(userID);
 
-      navigation.navigate('Dashboard');
+      navigation.navigate('Sources');
     } catch (error) {
       console.log(error);
     } finally {

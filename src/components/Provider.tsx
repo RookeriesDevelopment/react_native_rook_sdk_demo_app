@@ -3,7 +3,7 @@ import {
   View,
   Text,
   Image,
-  TouchableOpacity,
+  Pressable,
   Linking,
   StyleSheet,
  } from 'react-native';
@@ -11,33 +11,33 @@ import {
 interface Props {
   imageURL: string;
   cta: string;
+  name: string;
   connected: boolean
 }
 
-const Provider: React.FC<Props> = ({ imageURL, cta, connected }) => {
+const Provider: React.FC<Props> = ({ imageURL, cta, connected, name }) => {
   const handlePress = () => {
     Linking.openURL(cta);
   };
 
   return (
     <View style = { styles.container }>
-      <Image
-        source={{ uri: imageURL }}
-        style={{ width: 50, height: 50, marginRight: 10 }}
-      />
+      <View style ={ styles.nameContainer }>
+        <Image
+          source={{ uri: imageURL }}
+          style={{ width: 50, height: 50, marginRight: 10 }}
+        />
+
+        <Text style = { styles.title }>{name}</Text>
+      </View>
 
       { !connected && (
-        <TouchableOpacity
+        <Pressable
           onPress={handlePress}
-          style={{
-            backgroundColor: 'blue',
-            padding: 10,
-            borderRadius: 5,
-            marginTop: 5,
-          }}
+          style={ styles.button }
         >
-          <Text style={{ color: 'white' }}>Conectar</Text>
-        </TouchableOpacity>
+          <Text>Conectar</Text>
+        </Pressable>
       )}
 
     </View>
@@ -46,12 +46,30 @@ const Provider: React.FC<Props> = ({ imageURL, cta, connected }) => {
 
 const styles = StyleSheet.create({
   container: {
+    padding: 10,
+    borderWidth: 1,
+    borderColor: '#C8BEBE',
+    borderRadius: 10,
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    backgroundColor: 'black',
   },
+  nameContainer:{
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10
+  },
+  title: {
+    fontFamily: 'Poppins',
+    fontSize: 16
+  },
+  button:{
+    backgroundColor: '#A0E984',
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    borderRadius: 10,
+  }
 });
 
 export default Provider;
