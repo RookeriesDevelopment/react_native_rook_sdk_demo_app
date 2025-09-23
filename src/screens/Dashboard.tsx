@@ -9,6 +9,7 @@ import {
   SDKDataSource
 } from 'react-native-rook-sdk';
 import {useIsFocused} from '@react-navigation/native';
+import {Stat} from '../components/Stat'
 
 export const Dashboard = () => {
   const [syncing, setSyncing] = useState(false);
@@ -87,6 +88,25 @@ export const Dashboard = () => {
     <SafeAreaView style={styles.container}>
       <Text style={styles.title}>How your journey goes...</Text>
       <Text style={styles.message}>Move, rest, charge and repeat every day</Text>
+
+      <View style = { styles.statsContainer }>
+        <Stat 
+          value="2352"
+          icon="footsteps-outline"
+        /> 
+
+        <Stat 
+          value="2352"
+          icon="flame-outline"
+        /> 
+      </View>
+
+      <View style = { styles.extraContainer }>
+        <Stat 
+          value="8 hrs"
+          icon="moon-outline"
+        /> 
+      </View>
     </SafeAreaView>
   );
 };
@@ -95,6 +115,15 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     marginHorizontal: "2.5%",
+  },
+  statsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
+  },
+  extraContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginTop: 12
   },
   title: {
     fontFamily: 'Poppins',
