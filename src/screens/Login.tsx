@@ -5,6 +5,7 @@ import {
   TextInput,
   Pressable,
   StyleSheet,
+  StatusBar,
   NativeEventEmitter,
   ImageBackground,
   KeyboardAvoidingView,
@@ -102,6 +103,11 @@ export const Login = () => {
       source = { require('../../assets/images/bg.png') }
       style = { styles.background }
     >
+      <StatusBar 
+        backgroundColor = "blue"
+        barStyle="light-content"
+      />
+
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={ styles.keyboardView } 
