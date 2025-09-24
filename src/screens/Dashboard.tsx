@@ -1,6 +1,13 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, {useEffect, useState} from 'react';
-import {StyleSheet, Text, View, SafeAreaView, StatusBar} from 'react-native';
+import {
+  Platform,
+  StyleSheet, 
+  Text, 
+  View, 
+  SafeAreaView, 
+  StatusBar
+} from 'react-native';
 import {
   useRookSync,
   useRookVariables,
@@ -11,13 +18,17 @@ import {useIsFocused} from '@react-navigation/native';
 import {Stat} from '../components/Stat'
 
 export const Dashboard = () => {
-  const [syncing, setSyncing] = useState(false);
   const [currentSteps, setCurrentSteps] = useState('');
   const [currentCalories, setCurrentCalories] = useState('');
 
   const isFocused = useIsFocused();
   
-  const { checkSamsungAvailability } = useRookPermissions()
+  const { 
+    checkAvailability, 
+    checkSamsungAvailability,
+    healthConnectHasPartialPermissions,
+    samsungHealthHasPartialPermissions
+  } = useRookPermissions()
   const { getTodaySteps, getTodayCalories } = useRookVariables()
 
   const { sync } = useRookSync()
@@ -25,59 +36,73 @@ export const Dashboard = () => {
   useEffect(() => {
     syncSteps();
     syncCalories();
+    sync(console.log)
   }, [isFocused]);
-
-  const handleManualSync = async () => {
-    try {
-      setSyncing(true);
-
-      sync((result) => {
-        console.log(result)
-      
-        setSyncing(false)
-      })
-
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setSyncing(false);
-    }
-  };
 
   const syncSteps = async () => {
     try {
-      setCurrentSteps('loading...');
-
-      const samsungAvailability = await checkSamsungAvailability()
-
-      if (samsungAvailability === "INSTALLED") {
-        const steps = await getTodaySteps(SDKDataSource.SAMSUNG_HEALTH)
-
-        setCurrentSteps(
-          `Samsung Health steps: ${steps}`,
-        );
+      if (Platform.OS === 'ios') {
+        const steps = await getTodaySteps(SDKDataSource.APPLE_HEALTH)
+        setCurrentSteps(steps)
       } else {
-        setCurrentSteps(`Samsung health is not available`);
+        let steps = ''
+
+        if (await checkSamsungHealth()) 
+          steps = await getTodaySteps(SDKDataSource.SAMSUNG_HEALTH)
+
+        if (await checkHealhConnect()) 
+          steps = await getTodaySteps(SDKDataSource.HEALTH_CONNECT)
+
+        setCurrentSteps(steps)
       }
+
+
     } catch (error) {
       console.error(error);
-      setCurrentSteps('An error occurred, grant permissions');
     }
   };
 
+  const checkHealhConnect = async (): Promise<boolean> => {
+    try { 
+      const available = await checkAvailability()
+      const hasPermissions = await healthConnectHasPartialPermissions()
+
+      return available === "INSTALLED" && hasPermissions
+    } catch (error) {
+      console.error(error) 
+      return false
+    }
+  } 
+
+  const checkSamsungHealth = async (): Promise<boolean> => {
+    try { 
+      const available = await checkSamsungAvailability()
+      const hasPermissions = await samsungHealthHasPartialPermissions()
+
+      return available === "INSTALLED" && hasPermissions
+    } catch (error) {
+      console.error(error) 
+      return false
+    }
+  } 
   const syncCalories = async () => {
     try {
-      const samsungAvailability = await checkSamsungAvailability()
-
-      if (samsungAvailability === "INSTALLED") {
-        const calories = await getTodayCalories(SDKDataSource.SAMSUNG_HEALTH)
-
-        setCurrentCalories(
-          `Samsung Health calories: ${JSON.stringify(calories)}`,
-        );
+      if (Platform.OS === 'ios') {
+        const calories = await getTodayCalories(SDKDataSource.APPLE_HEALTH)
+        setCurrentCalories(`${calories.active + calories.basal}`)
       } else {
-        setCurrentCalories(`Samsung health is not available`);
+        let calories = {active: 0, basal: 0}
+
+        if (await checkSamsungHealth()) 
+          calories = await getTodayCalories(SDKDataSource.SAMSUNG_HEALTH)
+
+        if (await checkHealhConnect()) 
+          calories = await getTodayCalories(SDKDataSource.HEALTH_CONNECT)
+
+        setCurrentCalories(`${calories.active + calories.basal}`)
       }
+
+
     } catch (error) {
       console.error(error);
     }
@@ -95,20 +120,13 @@ export const Dashboard = () => {
 
       <View style = { styles.statsContainer }>
         <Stat 
-          value="2352"
+          value={currentSteps}
           icon="footsteps-outline"
         /> 
 
         <Stat 
-          value="2352"
+          value={currentCalories}
           icon="flame-outline"
-        /> 
-      </View>
-
-      <View style = { styles.extraContainer }>
-        <Stat 
-          value="8 hrs"
-          icon="moon-outline"
         /> 
       </View>
     </SafeAreaView>
