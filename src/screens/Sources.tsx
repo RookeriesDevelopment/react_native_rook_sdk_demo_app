@@ -20,7 +20,7 @@ import {
   useRookAppleHealth,
   useRookPermissions,
   useRookConfiguration,
-  SDKDataSource,
+  useRookHealthConnect
 } from 'react-native-rook-sdk';
 import Provider from '../components/Provider';
 import {ContinueButton} from '../components/ContinueButton';
@@ -52,7 +52,24 @@ export const Sources: FC<Props> = ({route}) => {
     disableBackGroundUpdates
   } = useRookAppleHealth();
 
-  const {requestAllAppleHealthPermissions} = useRookPermissions();
+  const {
+    checkAvailability,
+    checkSamsungAvailability,
+    requestAllAppleHealthPermissions,
+    requestAllHealthConnectPermissions,
+    requestSamsungHealthPermissions
+  } = useRookPermissions();
+
+  const {
+    isSamsungSyncEnabled,
+    enableSamsungSync,
+    disableSamsungSync
+  } = useRookConfiguration();
+
+  const {
+    cancelBackgroundSync,
+    scheduleBackgroundSync
+  } = useRookHealthConnect()
 
   useEffect(() => {
     loadDataSources();
@@ -67,6 +84,19 @@ export const Sources: FC<Props> = ({route}) => {
       if (Platform.OS === 'ios') {
         const result = await formAppleHealthSource();
         extra.push(result);
+      } else {
+        const healthConnectAvailability = await checkAvailability()
+        const samsungAvailability = await checkSamsungAvailability()
+        
+        if (healthConnectAvailability) {
+          const hc = await formHealthConnect()
+          extra.push(hc)
+        }
+        
+        if (samsungAvailability) {
+          const sh = await formSamsungHealth()
+          extra.push(sh)
+        }
       }
 
       setProviders([...extra, ...availableDataSources]);
@@ -77,6 +107,44 @@ export const Sources: FC<Props> = ({route}) => {
     }
   };
 
+  const formHealthConnect = async (): Promise<Sources> => {
+    let connected = false;
+
+    try {
+      connected = true
+      // todo: reemplazar con el isSheduled
+    } catch (error) {
+      console.log(error);
+    }
+
+    return {
+      name: 'Health Connect',
+      authorizationURL: '',
+      imageUrl: require('../../assets/images/hc.png'),
+      description: '',
+      connected,
+    };
+
+  }
+
+  const formSamsungHealth = async (): Promise<Sources> => {
+    let connected = false;
+
+    try {
+      connected = await isSamsungSyncEnabled()
+    } catch (error) {
+      console.log(error);
+    }
+
+    return {
+      name: 'Samsung Health',
+      authorizationURL: '',
+      imageUrl: require('../../assets/images/sh.png'),
+      description: '',
+      connected,
+    };
+  }
+  
   const formAppleHealthSource = async (): Promise<Sources> => {
     let connected = false;
 
@@ -106,6 +174,28 @@ export const Sources: FC<Props> = ({route}) => {
     return !status
   };
 
+  const handleHealthConnect = async (status: boolean) => {
+    if(status) {
+      await cancelBackgroundSync()
+    } else {
+      await requestAllHealthConnectPermissions()
+      await scheduleBackgroundSync()
+    }
+
+    return !status
+  }
+
+  const handleSamsung = async (status: boolean) => {
+    if(status) {
+      await disableSamsungSync()
+    } else {
+      await requestSamsungHealthPermissions()
+      await enableSamsungSync()
+    }
+
+    return !status
+  }
+
   const handleProviderPress = async ({
     name,
     connected,
@@ -120,6 +210,14 @@ export const Sources: FC<Props> = ({route}) => {
 
       if (name === "Apple Health") {
         result = await handleApple(connected)
+      }
+
+      if (name === 'Health Connect') {
+        result = await handleHealthConnect(connected)
+      }
+
+      if (name === 'Samsung Health') {
+        result = await handleSamsung(connected)
       }
 
       if(url) Linking.openURL(url)
