@@ -73,7 +73,7 @@ export const Login = () => {
       await yourLoginService(`${userID}`);
       await updateUserID(userID);
 
-      navigation.navigate('Sources');
+      navigation.navigate('Sources', { prev: "Login" });
     } catch (error) {
       console.log(error);
     } finally {

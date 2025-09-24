@@ -1,7 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, {useEffect, useState} from 'react';
-import {Button } from 'react-native';
-import {StyleSheet, Text, View, SafeAreaView} from 'react-native';
+import {StyleSheet, Text, View, SafeAreaView, StatusBar} from 'react-native';
 import {
   useRookSync,
   useRookVariables,
@@ -86,6 +85,11 @@ export const Dashboard = () => {
 
   return (
     <SafeAreaView style={styles.container}>
+      <StatusBar 
+        backgroundColor = "blue"
+        barStyle="dark-content"
+      />
+
       <Text style={styles.title}>How your journey goes...</Text>
       <Text style={styles.message}>Move, rest, charge and repeat every day</Text>
 

@@ -4,41 +4,45 @@ import {
   Text,
   Image,
   Pressable,
-  Linking,
   StyleSheet,
  } from 'react-native';
 
-interface Props {
-  imageURL: string;
-  cta: string;
-  name: string;
-  connected: boolean
+type Params = {
+  name: string, 
+  connected: boolean,
+  url?: string
 }
 
-const Provider: React.FC<Props> = ({ imageURL, cta, connected, name }) => {
-  const handlePress = () => {
-    Linking.openURL(cta);
+interface Props {
+  imageURL: string;
+  name: string;
+  connected: boolean;
+  url ?: string
+  onPress: (params: Params) => Promise<void>
+}
+
+const Provider: React.FC<Props> = ({ imageURL, connected, name, url, onPress }) => {
+  const handlePress = async () => {
+    await onPress({name, connected, url})
   };
 
   return (
     <View style = { styles.container }>
       <View style ={ styles.nameContainer }>
         <Image
-          source={{ uri: imageURL }}
+          source={typeof imageURL === 'number' ? imageURL : { uri: imageURL }}
           style={{ width: 50, height: 50, marginRight: 10 }}
         />
 
         <Text style = { styles.title }>{name}</Text>
       </View>
 
-      { !connected && (
-        <Pressable
-          onPress={handlePress}
-          style={ styles.button }
-        >
-          <Text>Conectar</Text>
-        </Pressable>
-      )}
+      <Pressable
+        onPress={handlePress}
+        style={[ styles.button, connected ? styles.disconect : styles.connect]}
+      >
+        <Text>{ connected ? "Disconnect" : "Connect" }</Text>
+      </Pressable>
 
     </View>
   );
@@ -65,10 +69,15 @@ const styles = StyleSheet.create({
     fontSize: 16
   },
   button:{
-    backgroundColor: '#A0E984',
     paddingVertical: 5,
     paddingHorizontal: 10,
     borderRadius: 10,
+  },
+  connect: {
+    backgroundColor: '#A0E984',
+  },
+  disconect: {
+    backgroundColor: '#F52222'
   }
 });
 

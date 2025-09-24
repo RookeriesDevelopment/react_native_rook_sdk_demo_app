@@ -6,16 +6,25 @@ import {
   StyleSheet,
   SafeAreaView,
   Text,
-  Pressable
+  Pressable,
+  Platform,
+  Alert,
+  Linking
 } from 'react-native';
 import {useRookDataSources} from 'react-native-rook-sdk';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import { RouteProp, useNavigation } from '@react-navigation/native'
+import {RouteProp, useNavigation} from '@react-navigation/native';
 import {DataSource} from 'react-native-rook-sdk/lib/typescript/src/types/DataSource';
+import {
+  useRookAppleHealth,
+  useRookPermissions,
+  useRookConfiguration,
+  SDKDataSource,
+} from 'react-native-rook-sdk';
 import Provider from '../components/Provider';
-import { ContinueButton } from '../components/ContinueButton'
-import { RootStackParamList } from '../App'
+import {ContinueButton} from '../components/ContinueButton';
+import {RootStackParamList} from '../App';
 
 type SourcesScreenRouteProp = RouteProp<RootStackParamList, 'Sources'>;
 
@@ -23,25 +32,44 @@ type Props = {
   route: SourcesScreenRouteProp;
 };
 
-export const Sources:FC<Props> = ({ route }) => {
+type Sources = {
+  onPress?: () => Promise<void>;
+} & DataSource;
+
+export const Sources: FC<Props> = ({route}) => {
   const {getAvailableDataSources} = useRookDataSources();
 
   const [isLoading, setIsLoading] = useState(true);
   const [providers, setProviders] = useState<DataSource[]>([]);
 
-  const navigate = useNavigation<NativeStackNavigationProp<RootStackParamList>>()
+  const navigate =
+    useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+
+  const {
+    ready,
+    isBackGroundForSummariesEnable, 
+    enableBackGroundUpdates, 
+    disableBackGroundUpdates
+  } = useRookAppleHealth();
+
+  const {requestAllAppleHealthPermissions} = useRookPermissions();
 
   useEffect(() => {
-
     loadDataSources();
-
   }, []);
 
   const loadDataSources = async () => {
     try {
       const availableDataSources = await getAvailableDataSources();
 
-      setProviders(availableDataSources);
+      const extra: DataSource[] = [];
+
+      if (Platform.OS === 'ios') {
+        const result = await formAppleHealthSource();
+        extra.push(result);
+      }
+
+      setProviders([...extra, ...availableDataSources]);
     } catch (error) {
       console.error('An error occurred trying to fetch the sources:', error);
     } finally {
@@ -49,33 +77,101 @@ export const Sources:FC<Props> = ({ route }) => {
     }
   };
 
-  return isLoading ? (
+  const formAppleHealthSource = async (): Promise<Sources> => {
+    let connected = false;
+
+    try {
+      connected = await isBackGroundForSummariesEnable();
+    } catch (error) {
+      console.log(error);
+    }
+
+    return {
+      name: 'Apple Health',
+      authorizationURL: '',
+      imageUrl: require('../../assets/images/apple.png'),
+      description: '',
+      connected,
+    };
+  };
+
+  const handleApple = async (status: boolean): Promise<boolean> => {
+    if (status) {
+      await disableBackGroundUpdates()
+    } else {
+      await requestAllAppleHealthPermissions();
+      await enableBackGroundUpdates();
+    }
+    
+    return !status
+  };
+
+  const handleProviderPress = async ({
+    name,
+    connected,
+    url
+  }: {
+    name: string;
+    connected: boolean;
+    url?: string
+  }): Promise<void> => {
+    try {
+      let result = !connected
+
+      if (name === "Apple Health") {
+        result = await handleApple(connected)
+      }
+
+      if(url) Linking.openURL(url)
+
+      const updatedSources = providers.map(source => {
+        if(source.name === name) return { ...source, connected: result }
+        return source
+      })
+
+      setProviders(updatedSources)   
+    } catch (error) {
+      Alert.alert(
+      "Error",
+      "Something went wrong. Please try again.",
+      [
+        { 
+          text: "OK", 
+          onPress: () => console.log("OK Pressed") 
+        }
+      ]
+    );
+    }
+  };
+
+  return (isLoading || !ready) ? (
     <View style={styles.centered}>
       <ActivityIndicator size="large" />
     </View>
   ) : (
     <SafeAreaView style={styles.container}>
-      <View style = { styles.navigation }>
-        { route?.params?.prev === "Settings" && (
-          <Pressable onPress = {() => navigate.goBack()}>
-            <Ionicons name="chevron-back-outline" size = {20}/>
+      <View style={styles.navigation}>
+        {route?.params?.prev === 'Settings' && (
+          <Pressable onPress={() => navigate.goBack()}>
+            <Ionicons name="chevron-back-outline" size={20} />
           </Pressable>
         )}
-        
-        <Text style = { styles.title }>Get value of your data</Text>
+
+        <Text style={styles.title}>Get value of your data</Text>
       </View>
 
-      <View style = { styles.listContainer }>
+      <View style={styles.listContainer}>
         <FlatList
           data={providers}
           keyExtractor={item => item.name}
-          contentContainerStyle={{ gap: 10 }}
+          contentContainerStyle={{gap: 10}}
           renderItem={({item}) => (
             <Provider
               imageURL={item.imageUrl}
-              cta={item.authorizationURL}
               connected={item.connected}
               name={item.name}
+              url = {item.authorizationURL}
+              onPress={handleProviderPress}
             />
           )}
           ListEmptyComponent={
@@ -83,11 +179,13 @@ export const Sources:FC<Props> = ({ route }) => {
               <Text>There is not available sources</Text>
             </View>
           }
-        /> 
+        />
       </View>
 
-      { route?.params?.prev === "Login" && (
-        <ContinueButton onPress = {() => navigate.navigate("Dashboard")}/>
+      {route?.params?.prev === 'Login' && (
+        <View style={styles.continue}>
+          <ContinueButton onPress={() => navigate.navigate('Dashboard')} />
+        </View>
       )}
     </SafeAreaView>
   );
@@ -102,7 +200,13 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    backgroundColor: 'white'
+    backgroundColor: 'white',
+  },
+  continue: {
+    marginTop: 35,
+    marginHorizontal: '2.5%',
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
   },
   navigation: {
     flexDirection: 'row',
@@ -122,8 +226,8 @@ const styles = StyleSheet.create({
   },
   listContainer: {
     marginHorizontal: '2.5%',
-    marginTop: 10, 
-  }
+    marginTop: 10,
+  },
 });
 
 export default Sources;
