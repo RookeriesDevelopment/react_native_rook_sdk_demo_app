@@ -1,5 +1,5 @@
  import React, {useEffect} from 'react';
- import { Text, View, StyleSheet, SafeAreaView } from 'react-native';
+ import { StatusBar, Text, View, StyleSheet, SafeAreaView } from 'react-native';
  import {useNavigation} from '@react-navigation/native';
  import {NativeStackNavigationProp} from '@react-navigation/native-stack';
  import { useRookConfiguration } from 'react-native-rook-sdk'
@@ -30,6 +30,12 @@
 
    return (
      <View style = { styles.container }>
+
+      <StatusBar 
+        backgroundColor="transparent"
+        translucent
+        barStyle="dark-content"
+      />
        <SafeAreaView style = { styles.formContainer }>
          <Text style = { styles.title }>Unlock your potencial</Text>
          <Text style = { styles.description }>

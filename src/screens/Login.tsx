@@ -87,7 +87,8 @@ export const Login = () => {
       style = { styles.background }
     >
       <StatusBar 
-        backgroundColor = "blue"
+        backgroundColor="transparent"
+        translucent
         barStyle="light-content"
       />
 

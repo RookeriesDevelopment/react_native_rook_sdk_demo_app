@@ -77,9 +77,11 @@ export const Dashboard = () => {
   const checkSamsungHealth = async (): Promise<boolean> => {
     try { 
       const available = await checkSamsungAvailability()
-      const hasPermissions = await samsungHealthHasPartialPermissions()
 
-      return available === "INSTALLED" && hasPermissions
+      if (available !== "INSTALLED") return false
+
+      const hasPermissions = await samsungHealthHasPartialPermissions()
+      return hasPermissions
     } catch (error) {
       console.error(error) 
       return false
@@ -99,7 +101,7 @@ export const Dashboard = () => {
         if (await checkHealhConnect()) 
           calories = await getTodayCalories(SDKDataSource.HEALTH_CONNECT)
 
-        setCurrentCalories(`${calories.active + calories.basal}`)
+        setCurrentCalories(`${Math.round(calories.active + calories.basal)}`)
       }
 
 
@@ -111,7 +113,7 @@ export const Dashboard = () => {
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar 
-        backgroundColor = "blue"
+        backgroundColor = "white"
         barStyle="dark-content"
       />
 
@@ -136,7 +138,9 @@ export const Dashboard = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginHorizontal: "2.5%",
+    paddingHorizontal: "2.5%",
+    backgroundColor: "white",
+    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0
   },
   statsContainer: {
     flexDirection: 'row',

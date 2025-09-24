@@ -5,7 +5,8 @@ import {
   SafeAreaView, 
   Pressable, 
   StyleSheet, 
-  Platform 
+  Platform,
+  StatusBar
 } from 'react-native'
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {useNavigation} from '@react-navigation/native';
@@ -82,9 +83,12 @@ export const Settings = () => {
 
 const styles = StyleSheet.create({
   container: {
-    marginHorizontal: "2.5%"
+    backgroundColor: "white",
+    flex: 1,
+    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0
   },
   optionRow: {
+    marginHorizontal: "2.5%",
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',

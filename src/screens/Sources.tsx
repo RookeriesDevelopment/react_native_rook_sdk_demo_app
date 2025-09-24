@@ -5,6 +5,7 @@ import {
   ActivityIndicator,
   StyleSheet,
   SafeAreaView,
+  StatusBar,
   Text,
   Pressable,
   Platform,
@@ -88,12 +89,12 @@ export const Sources: FC<Props> = ({route}) => {
         const healthConnectAvailability = await checkAvailability()
         const samsungAvailability = await checkSamsungAvailability()
         
-        if (healthConnectAvailability) {
+        if (healthConnectAvailability === 'INSTALLED') {
           const hc = await formHealthConnect()
           extra.push(hc)
         }
         
-        if (samsungAvailability) {
+        if (samsungAvailability === 'INSTALLED') {
           const sh = await formSamsungHealth()
           extra.push(sh)
         }
@@ -248,6 +249,11 @@ export const Sources: FC<Props> = ({route}) => {
     </View>
   ) : (
     <SafeAreaView style={styles.container}>
+      <StatusBar 
+        backgroundColor="white"
+        barStyle="dark-content"
+      />
+        
       <View style={styles.navigation}>
         {route?.params?.prev === 'Settings' && (
           <Pressable onPress={() => navigate.goBack()}>
@@ -299,6 +305,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: 'white',
+    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0
   },
   continue: {
     marginTop: 35,
