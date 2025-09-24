@@ -1,13 +1,51 @@
 import React from 'react'
-import { Text, SafeAreaView, Pressable, StyleSheet } from 'react-native'
+import { 
+  Alert, 
+  Text, 
+  SafeAreaView, 
+  Pressable, 
+  StyleSheet, 
+  Platform 
+} from 'react-native'
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
+import {useRookConfiguration, SDKDataSource} from 'react-native-rook-sdk'
 import {RootStackParamList} from '../App';
 
 export const Settings = () => {
 
   const navigate = useNavigation<NativeStackNavigationProp<RootStackParamList>>()
+  const {removeUserFromRook} = useRookConfiguration()
+
+  const handleLogOut = () => {
+    Alert.alert(
+      "Log Out", 
+      "Are you sure you want to log out?",
+      [
+        {
+          text: "Cancel",
+          style: "cancel"
+        },
+        { 
+          text: "OK", 
+          onPress: async () => {
+            const sources = Platform.OS === 'ios' 
+              ? [SDKDataSource.APPLE_HEALTH]
+              : [SDKDataSource.HEALTH_CONNECT, SDKDataSource.SAMSUNG_HEALTH]
+
+            await removeUserFromRook(sources)
+
+            navigate.reset({
+              index: 0,
+              routes: [{ name: 'Login' }],
+            });
+          },
+          style: 'destructive',
+        }
+      ]
+    );
+  }
 
   return (
     <SafeAreaView style = { styles.container }>
@@ -26,7 +64,10 @@ export const Settings = () => {
         />
       </Pressable>
 
-      <Pressable style = { styles.optionRow }>
+      <Pressable 
+        style = { styles.optionRow }
+        onPress = {handleLogOut}
+      >
         <Text style = {[ styles.title, styles.logOut ]}>Log out</Text>
 
         <Ionicons 
