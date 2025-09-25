@@ -47,12 +47,11 @@ export const Dashboard = () => {
       } else {
         let steps = ''
 
-        if (await checkSamsungHealth()) 
+        if (await checkSamsungHealth()) {
           steps = await getTodaySteps(SDKDataSource.SAMSUNG_HEALTH)
-
-        if (await checkHealhConnect()) 
-          steps = await getTodaySteps(SDKDataSource.HEALTH_CONNECT)
-
+        } else if (await checkHealhConnect()) {
+            steps = await getTodaySteps(SDKDataSource.HEALTH_CONNECT)
+        }
         setCurrentSteps(steps)
       }
 
@@ -97,8 +96,7 @@ export const Dashboard = () => {
 
         if (await checkSamsungHealth()) 
           calories = await getTodayCalories(SDKDataSource.SAMSUNG_HEALTH)
-
-        if (await checkHealhConnect()) 
+        else if (await checkHealhConnect()) 
           calories = await getTodayCalories(SDKDataSource.HEALTH_CONNECT)
 
         setCurrentCalories(`${Math.round(calories.active + calories.basal)}`)

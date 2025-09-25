@@ -308,7 +308,7 @@ const styles = StyleSheet.create({
     paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0
   },
   continue: {
-    marginTop: 35,
+    marginVertical: 35,
     marginHorizontal: '2.5%',
     flexDirection: 'row',
     justifyContent: 'flex-end',
@@ -332,6 +332,7 @@ const styles = StyleSheet.create({
   listContainer: {
     marginHorizontal: '2.5%',
     marginTop: 10,
+    flex: 1,
   },
 });
 
