@@ -25,7 +25,7 @@ export default function App() {
       clientUUID={credentials.uuid}
       password={credentials.pwd}
       enableLogs={true}
-      enableBackgroundSync>
+      enableBackgroundSync = {false}>
       <NavigationContainer>
         <Stack.Navigator>
           <Stack.Screen

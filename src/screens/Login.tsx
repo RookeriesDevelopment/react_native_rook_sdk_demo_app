@@ -147,6 +147,7 @@ const styles = StyleSheet.create({
   },
   input: {
     marginVertical: 20,
+    color: "black",
     borderColor: "#C8BEBE",
     borderWidth: 1,
     padding: 8,
@@ -163,7 +164,7 @@ const styles = StyleSheet.create({
     fontFamily: "Poppins",
     fontSize: 15,
   },
-keyboardView: {
+  keyboardView: {
     flex: 1,
     justifyContent: 'flex-end',
   },

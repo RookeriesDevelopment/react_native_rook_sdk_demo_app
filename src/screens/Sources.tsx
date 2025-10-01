@@ -69,7 +69,8 @@ export const Sources: FC<Props> = ({route}) => {
 
   const {
     cancelBackgroundSync,
-    scheduleBackgroundSync
+    scheduleBackgroundSync,
+    isBackgroundSyncEnabled,
   } = useRookHealthConnect()
 
   useEffect(() => {
@@ -112,8 +113,7 @@ export const Sources: FC<Props> = ({route}) => {
     let connected = false;
 
     try {
-      connected = true
-      // todo: reemplazar con el isSheduled
+      connected = await isBackgroundSyncEnabled()
     } catch (error) {
       console.log(error);
     }
@@ -151,6 +151,7 @@ export const Sources: FC<Props> = ({route}) => {
 
     try {
       connected = await isBackGroundForSummariesEnable();
+      console.log({apple: connected})
     } catch (error) {
       console.log(error);
     }
