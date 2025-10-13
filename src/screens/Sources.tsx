@@ -1,4 +1,5 @@
 import React, {type FC, useState, useEffect} from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   View,
   FlatList,
@@ -166,13 +167,20 @@ export const Sources: FC<Props> = ({route}) => {
   };
 
   const handleApple = async (status: boolean): Promise<boolean> => {
+    let value = false
+
     if (status) {
       await disableBackGroundUpdates()
     } else {
+      value = true
       await requestAllAppleHealthPermissions();
       await enableBackGroundUpdates();
     }
-    
+
+    AsyncStorage.setItem('enableBackgroundSync', `${value}`)
+      .then()
+      .catch(console.log)
+
     return !status
   };
 

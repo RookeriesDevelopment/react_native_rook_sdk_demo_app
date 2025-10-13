@@ -1,4 +1,5 @@
-import * as React from 'react';
+import React, { useEffect, useRef } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {Login} from './screens/Login';
@@ -19,13 +20,33 @@ export type RootStackParamList = {
 
 
 export default function App() {
+  const bgStatus = useRef(false)
+
+  useEffect(() => {
+    checkBackgroundSyncStatus()
+  }, [])
+
+  const checkBackgroundSyncStatus = async () => {
+    try {
+      const value = await AsyncStorage.getItem('enableBackgroundSync');
+
+      if (value === null) throw new Error("No value");
+      
+      bgStatus.current = JSON.parse(value!) as boolean
+      console.log("finished. . .", value)
+    } catch (error) {
+      bgStatus.current = false
+      console.log(error)
+    }
+  }
+
   return (
     <RookSyncGate
       environment="sandbox"
       clientUUID={credentials.uuid}
       password={credentials.pwd}
       enableLogs={true}
-      enableBackgroundSync = {false}>
+      enableBackgroundSync = {bgStatus.current}>
       <NavigationContainer>
         <Stack.Navigator>
           <Stack.Screen
