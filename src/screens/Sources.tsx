@@ -80,7 +80,9 @@ export const Sources: FC<Props> = ({route}) => {
 
   const loadDataSources = async () => {
     try {
-      const availableDataSources = await getAvailableDataSources();
+      const availableDataSources = await getAvailableDataSources({ 
+        redirectURL: "https://main.d1kx6n00xlijg7.amplifyapp.com?fr=rn"
+      });
 
       const extra: DataSource[] = [];
 
