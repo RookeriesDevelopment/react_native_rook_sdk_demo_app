@@ -91,7 +91,7 @@ export default function App() {
       clientUUID={credentials.uuid}
       password={credentials.pwd}
       enableLogs={true}
-      enableBackgroundSync={bgStatus.current}>
+      enableBackgroundSync={bgStatus}>
       <NavigationContainer>
         <Stack.Navigator>
           <Stack.Screen

@@ -11,24 +11,33 @@ import {
   Pressable,
   Platform,
   Alert,
-  Linking
+  Linking,
 } from 'react-native';
 import {useRookDataSources} from 'react-native-rook-sdk';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {RouteProp, useNavigation} from '@react-navigation/native';
-import {DataSource} from 'react-native-rook-sdk/lib/typescript/src/types/DataSource';
+import {
+  DataSource,
+  DataSourceType,
+} from 'react-native-rook-sdk/lib/typescript/src/types/DataSource';
 import {
   useRookAppleHealth,
   useRookPermissions,
   useRookConfiguration,
-  useRookHealthConnect
+  useRookHealthConnect,
 } from 'react-native-rook-sdk';
 import Provider from '../components/Provider';
 import {ContinueButton} from '../components/ContinueButton';
 import {RootStackParamList} from '../App';
 
 type SourcesScreenRouteProp = RouteProp<RootStackParamList, 'Sources'>;
+
+type SourceDetails = {
+  name: string;
+  url?: string;
+  connected: boolean;
+};
 
 type Props = {
   route: SourcesScreenRouteProp;
@@ -39,7 +48,7 @@ type Sources = {
 } & DataSource;
 
 export const Sources: FC<Props> = ({route}) => {
-  const {getAvailableDataSources} = useRookDataSources();
+  const {getAvailableDataSources, revokeDataSource} = useRookDataSources();
 
   const [isLoading, setIsLoading] = useState(true);
   const [providers, setProviders] = useState<DataSource[]>([]);
@@ -49,9 +58,9 @@ export const Sources: FC<Props> = ({route}) => {
 
   const {
     ready,
-    isBackGroundForSummariesEnable, 
-    enableBackGroundUpdates, 
-    disableBackGroundUpdates
+    isBackGroundForSummariesEnable,
+    enableBackGroundUpdates,
+    disableBackGroundUpdates,
   } = useRookAppleHealth();
 
   const {
@@ -59,20 +68,17 @@ export const Sources: FC<Props> = ({route}) => {
     checkSamsungAvailability,
     requestAllAppleHealthPermissions,
     requestAllHealthConnectPermissions,
-    requestSamsungHealthPermissions
+    requestSamsungHealthPermissions,
   } = useRookPermissions();
 
-  const {
-    isSamsungSyncEnabled,
-    enableSamsungSync,
-    disableSamsungSync
-  } = useRookConfiguration();
+  const {isSamsungSyncEnabled, enableSamsungSync, disableSamsungSync} =
+    useRookConfiguration();
 
   const {
     cancelBackgroundSync,
     scheduleBackgroundSync,
     isBackgroundSyncEnabled,
-  } = useRookHealthConnect()
+  } = useRookHealthConnect();
 
   useEffect(() => {
     loadDataSources();
@@ -80,8 +86,12 @@ export const Sources: FC<Props> = ({route}) => {
 
   const loadDataSources = async () => {
     try {
-      const availableDataSources = await getAvailableDataSources({ 
-        redirectURL: "https://main.d1kx6n00xlijg7.amplifyapp.com?fr=rn"
+      const availableDataSources = await getAvailableDataSources({
+        redirectURL: 'https://main.d1kx6n00xlijg7.amplifyapp.com?fr=rn',
+      });
+
+      const filtered = availableDataSources.filter(e => {
+        return e.name !== 'Dexcom';
       });
 
       const extra: DataSource[] = [];
@@ -90,21 +100,21 @@ export const Sources: FC<Props> = ({route}) => {
         const result = await formAppleHealthSource();
         extra.push(result);
       } else {
-        const healthConnectAvailability = await checkAvailability()
-        const samsungAvailability = await checkSamsungAvailability()
-        
+        const healthConnectAvailability = await checkAvailability();
+        const samsungAvailability = await checkSamsungAvailability();
+
         if (healthConnectAvailability === 'INSTALLED') {
-          const hc = await formHealthConnect()
-          extra.push(hc)
+          const hc = await formHealthConnect();
+          extra.push(hc);
         }
-        
+
         if (samsungAvailability === 'INSTALLED') {
-          const sh = await formSamsungHealth()
-          extra.push(sh)
+          const sh = await formSamsungHealth();
+          extra.push(sh);
         }
       }
 
-      setProviders([...extra, ...availableDataSources]);
+      setProviders([...extra, ...filtered]);
     } catch (error) {
       console.error('An error occurred trying to fetch the sources:', error);
     } finally {
@@ -116,7 +126,7 @@ export const Sources: FC<Props> = ({route}) => {
     let connected = false;
 
     try {
-      connected = await isBackgroundSyncEnabled()
+      connected = await isBackgroundSyncEnabled();
     } catch (error) {
       console.log(error);
     }
@@ -128,14 +138,13 @@ export const Sources: FC<Props> = ({route}) => {
       description: '',
       connected,
     };
-
-  }
+  };
 
   const formSamsungHealth = async (): Promise<Sources> => {
     let connected = false;
 
     try {
-      connected = await isSamsungSyncEnabled()
+      connected = await isSamsungSyncEnabled();
     } catch (error) {
       console.log(error);
     }
@@ -147,14 +156,14 @@ export const Sources: FC<Props> = ({route}) => {
       description: '',
       connected,
     };
-  }
-  
+  };
+
   const formAppleHealthSource = async (): Promise<Sources> => {
     let connected = false;
 
     try {
       connected = await isBackGroundForSummariesEnable();
-      console.log({apple: connected})
+      console.log({apple: connected});
     } catch (error) {
       console.log(error);
     }
@@ -169,102 +178,116 @@ export const Sources: FC<Props> = ({route}) => {
   };
 
   const handleApple = async (status: boolean): Promise<boolean> => {
-    let value = false
+    let value = false;
 
     if (status) {
-      await disableBackGroundUpdates()
+      await disableBackGroundUpdates();
     } else {
-      value = true
+      value = true;
       await requestAllAppleHealthPermissions();
       await enableBackGroundUpdates();
     }
 
     AsyncStorage.setItem('enableBackgroundSync', `${value}`)
       .then()
-      .catch(console.log)
+      .catch(console.log);
 
-    return !status
+    return !status;
   };
 
   const handleHealthConnect = async (status: boolean) => {
-    if(status) {
-      await cancelBackgroundSync()
+    let value = false;
+
+    if (status) {
+      await cancelBackgroundSync();
     } else {
-      await requestAllHealthConnectPermissions()
-      await scheduleBackgroundSync()
+      value = true;
+      await requestAllHealthConnectPermissions();
+      await scheduleBackgroundSync();
     }
 
-    return !status
-  }
+    AsyncStorage.setItem('enableBackgroundSync', `${value}`)
+      .then()
+      .catch(console.log);
+
+    return !status;
+  };
 
   const handleSamsung = async (status: boolean) => {
-    if(status) {
-      await disableSamsungSync()
+    let value = false;
+
+    if (status) {
+      await disableSamsungSync();
     } else {
-      await requestSamsungHealthPermissions()
-      await enableSamsungSync()
+      value = true;
+      await requestSamsungHealthPermissions();
+      await enableSamsungSync();
     }
 
-    return !status
-  }
+    AsyncStorage.setItem('enableBackgroundSync', `${value}`)
+      .then()
+      .catch(console.log);
+
+    return !status;
+  };
+
+  const handleAPISource = async ({url, name, connected}: SourceDetails) => {
+    if (connected) {
+      const result = await revokeDataSource(name as DataSourceType);
+      console.log(result);
+    } else if (url) {
+      Linking.openURL(url);
+    }
+
+    return !connected;
+  };
 
   const handleProviderPress = async ({
-    name,
     connected,
-    url
-  }: {
-    name: string;
-    connected: boolean;
-    url?: string
-  }): Promise<void> => {
+    name,
+    url,
+  }: SourceDetails): Promise<void> => {
     try {
-      let result = !connected
+      let result = !connected;
 
-      if (name === "Apple Health") {
-        result = await handleApple(connected)
+      if (name === 'Apple Health') {
+        result = await handleApple(connected);
       }
 
       if (name === 'Health Connect') {
-        result = await handleHealthConnect(connected)
+        result = await handleHealthConnect(connected);
       }
 
       if (name === 'Samsung Health') {
-        result = await handleSamsung(connected)
+        result = await handleSamsung(connected);
       }
 
-      if(url) Linking.openURL(url)
+      result = await handleAPISource({name, connected, url});
 
       const updatedSources = providers.map(source => {
-        if(source.name === name) return { ...source, connected: result }
-        return source
-      })
+        if (source.name === name) return {...source, connected: result};
+        return source;
+      });
 
-      setProviders(updatedSources)   
+      setProviders(updatedSources);
     } catch (error) {
-      Alert.alert(
-      "Error",
-      "Something went wrong. Please try again.",
-      [
-        { 
-          text: "OK", 
-          onPress: () => console.log("OK Pressed") 
-        }
-      ]
-    );
+      Alert.alert('Error', 'Something went wrong. Please try again.', [
+        {
+          text: 'OK',
+          onPress: () => console.log('OK Pressed'),
+        },
+      ]);
     }
   };
 
-  return (isLoading || !ready) ? (
+  return isLoading || !ready ? (
     <View style={styles.centered}>
       <ActivityIndicator size="large" />
     </View>
   ) : (
     <SafeAreaView style={styles.container}>
-      <StatusBar 
-        backgroundColor="white"
-        barStyle="dark-content"
-      />
-        
+      <StatusBar backgroundColor="white" barStyle="dark-content" />
+
       <View style={styles.navigation}>
         {route?.params?.prev === 'Settings' && (
           <Pressable onPress={() => navigate.goBack()}>
@@ -285,7 +308,7 @@ export const Sources: FC<Props> = ({route}) => {
               imageURL={item.imageUrl}
               connected={item.connected}
               name={item.name}
-              url = {item.authorizationURL}
+              url={item.authorizationURL}
               onPress={handleProviderPress}
             />
           )}
@@ -316,7 +339,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: 'white',
-    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0
+    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
   },
   continue: {
     marginVertical: 35,
