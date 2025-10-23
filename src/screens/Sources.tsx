@@ -30,12 +30,12 @@ import {
 import Provider from '../components/Provider';
 import {ContinueButton} from '../components/ContinueButton';
 import {RootStackParamList} from '../App';
+import {AuthorizedSource} from 'react-native-rook-sdk/lib/typescript/src/types/AuthorizedSources';
 
 type SourcesScreenRouteProp = RouteProp<RootStackParamList, 'Sources'>;
 
 type SourceDetails = {
   name: string;
-  url?: string;
   connected: boolean;
 };
 
@@ -45,13 +45,26 @@ type Props = {
 
 type Sources = {
   onPress?: () => Promise<void>;
-} & DataSource;
+} & AuthorizedSource;
+
+const UNAVAILABLE = [
+  'Dexcom',
+  'Whoop',
+  'Android',
+  'Health Connect',
+  'Apple Health',
+  'Strava',
+];
 
 export const Sources: FC<Props> = ({route}) => {
-  const {getAvailableDataSources, revokeDataSource} = useRookDataSources();
+  const {
+    getAuthorizedDataSourcesV2,
+    getDataSourceAuthorizer,
+    revokeDataSource,
+  } = useRookDataSources();
 
   const [isLoading, setIsLoading] = useState(true);
-  const [providers, setProviders] = useState<DataSource[]>([]);
+  const [providers, setProviders] = useState<AuthorizedSource[]>([]);
 
   const navigate =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -86,15 +99,13 @@ export const Sources: FC<Props> = ({route}) => {
 
   const loadDataSources = async () => {
     try {
-      const availableDataSources = await getAvailableDataSources({
-        redirectURL: 'https://main.d1kx6n00xlijg7.amplifyapp.com?fr=rn',
-      });
+      const availableDataSources = await getAuthorizedDataSourcesV2();
 
       const filtered = availableDataSources.filter(e => {
-        return e.name !== 'Dexcom';
+        return !UNAVAILABLE.includes(e.name);
       });
 
-      const extra: DataSource[] = [];
+      const extra: AuthorizedSource[] = [];
 
       if (Platform.OS === 'ios') {
         const result = await formAppleHealthSource();
@@ -133,10 +144,8 @@ export const Sources: FC<Props> = ({route}) => {
 
     return {
       name: 'Health Connect',
-      authorizationURL: '',
       imageUrl: require('../../assets/images/hc.png'),
-      description: '',
-      connected,
+      authorized: connected,
     };
   };
 
@@ -151,10 +160,8 @@ export const Sources: FC<Props> = ({route}) => {
 
     return {
       name: 'Samsung Health',
-      authorizationURL: '',
       imageUrl: require('../../assets/images/sh.png'),
-      description: '',
-      connected,
+      authorized: connected,
     };
   };
 
@@ -170,10 +177,8 @@ export const Sources: FC<Props> = ({route}) => {
 
     return {
       name: 'Apple Health',
-      authorizationURL: '',
       imageUrl: require('../../assets/images/apple.png'),
-      description: '',
-      connected,
+      authorized: connected,
     };
   };
 
@@ -231,12 +236,18 @@ export const Sources: FC<Props> = ({route}) => {
     return !status;
   };
 
-  const handleAPISource = async ({url, name, connected}: SourceDetails) => {
+  const handleAPISource = async ({name, connected}: SourceDetails) => {
     if (connected) {
       const result = await revokeDataSource(name as DataSourceType);
       console.log(result);
-    } else if (url) {
-      Linking.openURL(url);
+    } else {
+      const { authorizationUrl } = await getDataSourceAuthorizer({
+        redirectURL: 'https://react.d1kx6n00xlijg7.amplifyapp.com/',
+        dataSource: name as DataSourceType,
+      });
+
+      if (authorizationUrl) Linking.openURL(authorizationUrl)
+      else throw new Error("Not authorization url recieved"); 
     }
 
     return !connected;
@@ -245,32 +256,33 @@ export const Sources: FC<Props> = ({route}) => {
   const handleProviderPress = async ({
     connected,
     name,
-    url,
   }: SourceDetails): Promise<void> => {
     try {
       let result = !connected;
 
-      if (name === 'Apple Health') {
-        result = await handleApple(connected);
+      switch (name) {
+        case 'Apple Health':
+          result = await handleApple(connected);
+          break;
+        case 'Health Connect':
+          result = await handleHealthConnect(connected);
+          break;
+        case 'Samsung Health':
+          result = await handleSamsung(connected);
+          break;
+        default:
+          result = await handleAPISource({name, connected});
+          break;
       }
-
-      if (name === 'Health Connect') {
-        result = await handleHealthConnect(connected);
-      }
-
-      if (name === 'Samsung Health') {
-        result = await handleSamsung(connected);
-      }
-
-      result = await handleAPISource({name, connected, url});
 
       const updatedSources = providers.map(source => {
-        if (source.name === name) return {...source, connected: result};
+        if (source.name === name) return {...source, authorized: result};
         return source;
       });
 
       setProviders(updatedSources);
     } catch (error) {
+      console.error(error)
       Alert.alert('Error', 'Something went wrong. Please try again.', [
         {
           text: 'OK',
@@ -306,9 +318,8 @@ export const Sources: FC<Props> = ({route}) => {
           renderItem={({item}) => (
             <Provider
               imageURL={item.imageUrl}
-              connected={item.connected}
+              connected={item.authorized}
               name={item.name}
-              url={item.authorizationURL}
               onPress={handleProviderPress}
             />
           )}

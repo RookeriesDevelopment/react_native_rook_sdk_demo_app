@@ -10,20 +10,18 @@ import {
 type Params = {
   name: string, 
   connected: boolean,
-  url?: string
 }
 
 interface Props {
   imageURL: string;
   name: string;
   connected: boolean;
-  url ?: string
   onPress: (params: Params) => Promise<void>
 }
 
-const Provider: React.FC<Props> = ({ imageURL, connected, name, url, onPress }) => {
+const Provider: React.FC<Props> = ({ imageURL, connected, name, onPress }) => {
   const handlePress = async () => {
-    await onPress({name, connected, url})
+    await onPress({name, connected})
   };
 
   return (
