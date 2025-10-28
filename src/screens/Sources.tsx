@@ -18,7 +18,6 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {RouteProp, useNavigation} from '@react-navigation/native';
 import {
-  DataSource,
   DataSourceType,
 } from 'react-native-rook-sdk/lib/typescript/src/types/DataSource';
 import {
