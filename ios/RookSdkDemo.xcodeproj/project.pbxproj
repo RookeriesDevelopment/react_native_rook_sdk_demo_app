@@ -18,6 +18,7 @@
 		3D4A9FCE911F4401BA5A1EA2 /* Poppins-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3257BF9B7EBE4DBF8819D5DE /* Poppins-Medium.ttf */; };
 		4636EEDEB8ED46D991AF0A0E /* Poppins-LightItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = AF84F696DD9B45D4A2778679 /* Poppins-LightItalic.ttf */; };
 		4A309E36D6CF47A6AFEC8ECA /* Poppins-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 572B25CEBE3C4807BA2F13E6 /* Poppins-Bold.ttf */; };
+		6DC87D4DCD131C5AE76FDE3D /* libPods-RookSdkDemo.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BD69DEE07D91C4EF6822E65E /* libPods-RookSdkDemo.a */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
 		909B9DC459B44DB0B3BC0AE4 /* Poppins-Black.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 50F0CD1F0A5E466480989014 /* Poppins-Black.ttf */; };
 		9312FEDE271748D3B5CBB9A8 /* Poppins-MediumItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C8EAE19CEED947B2A21C897D /* Poppins-MediumItalic.ttf */; };
@@ -25,7 +26,6 @@
 		9CF661E763B4402D8706292B /* Poppins-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D5A69C1F6E3E451081B56028 /* Poppins-SemiBold.ttf */; };
 		A0491C1C5F854B5A9B855545 /* Poppins-ExtraBoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 39B6F4C97619483493ACC2CE /* Poppins-ExtraBoldItalic.ttf */; };
 		A39685F60CD8D242B2AEF168 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 994754C7E0447C5B74F46869 /* PrivacyInfo.xcprivacy */; };
-		A41259FC40A6A229097DB33C /* libPods-RookSdkDemo.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FD973374E938AE319DF8D7EB /* libPods-RookSdkDemo.a */; };
 		B4B6F70843A24EF28DC33B45 /* Poppins-ExtraLight.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D8BD1DF1DC6B46B5B5967563 /* Poppins-ExtraLight.ttf */; };
 		BF2EF289B41E4FCE832D7BBE /* Poppins-ExtraLightItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 4E9F22824783442DAC4C6DA5 /* Poppins-ExtraLightItalic.ttf */; };
 		C50537D1E01E48ADB3D8DDA2 /* Poppins-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = FD73D42BF21745B8BFAB28DA /* Poppins-Regular.ttf */; };
@@ -76,10 +76,10 @@
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = RookSdkDemo/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = RookSdkDemo/main.m; sourceTree = "<group>"; };
 		186BF855B22D4B06AB0AED06 /* Poppins-ThinItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-ThinItalic.ttf"; path = "../assets/fonts/Poppins/Poppins-ThinItalic.ttf"; sourceTree = "<group>"; };
+		22EC705073208D96C416909E /* Pods-RookSdkDemo.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RookSdkDemo.release.xcconfig"; path = "Target Support Files/Pods-RookSdkDemo/Pods-RookSdkDemo.release.xcconfig"; sourceTree = "<group>"; };
 		25124DD75F334F8E885C7C48 /* Poppins-SemiBoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-SemiBoldItalic.ttf"; path = "../assets/fonts/Poppins/Poppins-SemiBoldItalic.ttf"; sourceTree = "<group>"; };
 		3257BF9B7EBE4DBF8819D5DE /* Poppins-Medium.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-Medium.ttf"; path = "../assets/fonts/Poppins/Poppins-Medium.ttf"; sourceTree = "<group>"; };
 		39B6F4C97619483493ACC2CE /* Poppins-ExtraBoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-ExtraBoldItalic.ttf"; path = "../assets/fonts/Poppins/Poppins-ExtraBoldItalic.ttf"; sourceTree = "<group>"; };
-		3CBDCCC8AD75C4DA6E0326B8 /* Pods-RookSdkDemo.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RookSdkDemo.debug.xcconfig"; path = "Target Support Files/Pods-RookSdkDemo/Pods-RookSdkDemo.debug.xcconfig"; sourceTree = "<group>"; };
 		4E9F22824783442DAC4C6DA5 /* Poppins-ExtraLightItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-ExtraLightItalic.ttf"; path = "../assets/fonts/Poppins/Poppins-ExtraLightItalic.ttf"; sourceTree = "<group>"; };
 		50F0CD1F0A5E466480989014 /* Poppins-Black.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-Black.ttf"; path = "../assets/fonts/Poppins/Poppins-Black.ttf"; sourceTree = "<group>"; };
 		572B25CEBE3C4807BA2F13E6 /* Poppins-Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-Bold.ttf"; path = "../assets/fonts/Poppins/Poppins-Bold.ttf"; sourceTree = "<group>"; };
@@ -91,7 +91,9 @@
 		8B6F62F5B2BF48319CAA564E /* Poppins-Italic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-Italic.ttf"; path = "../assets/fonts/Poppins/Poppins-Italic.ttf"; sourceTree = "<group>"; };
 		994754C7E0447C5B74F46869 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; name = PrivacyInfo.xcprivacy; path = RookSdkDemo/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		AF84F696DD9B45D4A2778679 /* Poppins-LightItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-LightItalic.ttf"; path = "../assets/fonts/Poppins/Poppins-LightItalic.ttf"; sourceTree = "<group>"; };
+		BD69DEE07D91C4EF6822E65E /* libPods-RookSdkDemo.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-RookSdkDemo.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		BE420B97CC014A14B21CA7EE /* Poppins-Light.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-Light.ttf"; path = "../assets/fonts/Poppins/Poppins-Light.ttf"; sourceTree = "<group>"; };
+		C0DEFE66046ED234DE3C16A7 /* Pods-RookSdkDemo.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RookSdkDemo.debug.xcconfig"; path = "Target Support Files/Pods-RookSdkDemo/Pods-RookSdkDemo.debug.xcconfig"; sourceTree = "<group>"; };
 		C8EAE19CEED947B2A21C897D /* Poppins-MediumItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-MediumItalic.ttf"; path = "../assets/fonts/Poppins/Poppins-MediumItalic.ttf"; sourceTree = "<group>"; };
 		D5A69C1F6E3E451081B56028 /* Poppins-SemiBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-SemiBold.ttf"; path = "../assets/fonts/Poppins/Poppins-SemiBold.ttf"; sourceTree = "<group>"; };
 		D7CC8DC17CCC4A068A4353FB /* Poppins-ExtraBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-ExtraBold.ttf"; path = "../assets/fonts/Poppins/Poppins-ExtraBold.ttf"; sourceTree = "<group>"; };
@@ -118,9 +120,7 @@
 		DE8A62C92BBC916700DE12D1 /* HealthKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = HealthKit.framework; path = System/Library/Frameworks/HealthKit.framework; sourceTree = SDKROOT; };
 		DE8A62CB2BBC917500DE12D1 /* RookSdkDemo.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = RookSdkDemo.entitlements; path = RookSdkDemo/RookSdkDemo.entitlements; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
-		EE943523779BF557318D8841 /* Pods-RookSdkDemo.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RookSdkDemo.release.xcconfig"; path = "Target Support Files/Pods-RookSdkDemo/Pods-RookSdkDemo.release.xcconfig"; sourceTree = "<group>"; };
 		FD73D42BF21745B8BFAB28DA /* Poppins-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-Regular.ttf"; path = "../assets/fonts/Poppins/Poppins-Regular.ttf"; sourceTree = "<group>"; };
-		FD973374E938AE319DF8D7EB /* libPods-RookSdkDemo.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-RookSdkDemo.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -136,7 +136,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				DE8A62CA2BBC916700DE12D1 /* HealthKit.framework in Frameworks */,
-				A41259FC40A6A229097DB33C /* libPods-RookSdkDemo.a in Frameworks */,
+				6DC87D4DCD131C5AE76FDE3D /* libPods-RookSdkDemo.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -181,7 +181,7 @@
 			children = (
 				DE8A62C92BBC916700DE12D1 /* HealthKit.framework */,
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
-				FD973374E938AE319DF8D7EB /* libPods-RookSdkDemo.a */,
+				BD69DEE07D91C4EF6822E65E /* libPods-RookSdkDemo.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -248,8 +248,8 @@
 		BBD78D7AC51CEA395F1C20DB /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				3CBDCCC8AD75C4DA6E0326B8 /* Pods-RookSdkDemo.debug.xcconfig */,
-				EE943523779BF557318D8841 /* Pods-RookSdkDemo.release.xcconfig */,
+				C0DEFE66046ED234DE3C16A7 /* Pods-RookSdkDemo.debug.xcconfig */,
+				22EC705073208D96C416909E /* Pods-RookSdkDemo.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -306,13 +306,13 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "RookSdkDemo" */;
 			buildPhases = (
-				F1C06A9F23E05A1BAD7FF5EF /* [CP] Check Pods Manifest.lock */,
+				1D37989C10C8E179F79A9E88 /* [CP] Check Pods Manifest.lock */,
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
-				936E277281B4EAC493576D66 /* [CP] Embed Pods Frameworks */,
-				E92B326BFE98D2F178E5EFD9 /* [CP] Copy Pods Resources */,
+				A9B0147E1FE98D252E7C24B3 /* [CP] Embed Pods Frameworks */,
+				A411C16E4CE7C2B8C9290410 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -434,41 +434,7 @@
 			shellPath = /bin/sh;
 			shellScript = "set -e\n\nWITH_ENVIRONMENT=\"../node_modules/react-native/scripts/xcode/with-environment.sh\"\nREACT_NATIVE_XCODE=\"../node_modules/react-native/scripts/react-native-xcode.sh\"\n\n/bin/sh -c \"$WITH_ENVIRONMENT $REACT_NATIVE_XCODE\"\n";
 		};
-		936E277281B4EAC493576D66 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-RookSdkDemo/Pods-RookSdkDemo-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-RookSdkDemo/Pods-RookSdkDemo-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-RookSdkDemo/Pods-RookSdkDemo-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		E92B326BFE98D2F178E5EFD9 /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-RookSdkDemo/Pods-RookSdkDemo-resources-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Copy Pods Resources";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-RookSdkDemo/Pods-RookSdkDemo-resources-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-RookSdkDemo/Pods-RookSdkDemo-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		F1C06A9F23E05A1BAD7FF5EF /* [CP] Check Pods Manifest.lock */ = {
+		1D37989C10C8E179F79A9E88 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -488,6 +454,40 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		A411C16E4CE7C2B8C9290410 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-RookSdkDemo/Pods-RookSdkDemo-resources-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-RookSdkDemo/Pods-RookSdkDemo-resources-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-RookSdkDemo/Pods-RookSdkDemo-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		A9B0147E1FE98D252E7C24B3 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-RookSdkDemo/Pods-RookSdkDemo-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-RookSdkDemo/Pods-RookSdkDemo-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-RookSdkDemo/Pods-RookSdkDemo-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -572,7 +572,7 @@
 		};
 		13B07F941A680F5B00A75B9A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 3CBDCCC8AD75C4DA6E0326B8 /* Pods-RookSdkDemo.debug.xcconfig */;
+			baseConfigurationReference = C0DEFE66046ED234DE3C16A7 /* Pods-RookSdkDemo.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
@@ -601,7 +601,7 @@
 		};
 		13B07F951A680F5B00A75B9A /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = EE943523779BF557318D8841 /* Pods-RookSdkDemo.release.xcconfig */;
+			baseConfigurationReference = 22EC705073208D96C416909E /* Pods-RookSdkDemo.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
