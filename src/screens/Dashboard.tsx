@@ -29,6 +29,7 @@ export const Dashboard = () => {
     healthConnectHasPartialPermissions,
     samsungHealthHasPartialPermissions
   } = useRookPermissions()
+
   const { getTodaySteps, getTodayCalories } = useRookVariables()
 
   const { sync } = useRookSync()

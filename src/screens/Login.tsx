@@ -58,7 +58,7 @@ export const Login = () => {
         console.log(`Background services enabled: ${value}`);
         break;
       case 'ROOK_APPLE_HEALTH_BACKGROUND_ERROR':
-        console.log('Background services enabled: ', rest);
+        console.log('Background error apple health: ', rest);
         break;
       default:
         console.log(`Unknown notification: ${{rest, message, value, type}}`);
