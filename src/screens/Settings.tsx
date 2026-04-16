@@ -1,94 +1,82 @@
-import React from 'react'
-import { 
-  Alert, 
-  Text, 
-  SafeAreaView, 
-  Pressable, 
-  StyleSheet, 
+import React from 'react';
+import {
+  Alert,
+  Text,
+  Pressable,
+  StyleSheet,
   Platform,
-  StatusBar
-} from 'react-native'
+  StatusBar,
+  View,
+} from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import {useRookConfiguration, SDKDataSource} from 'react-native-rook-sdk'
+import {useRookConfiguration, SDKDataSource} from 'react-native-rook-sdk';
 import {RootStackParamList} from '../App';
+import {SafeAreaView} from 'react-native-safe-area-context';
 
 export const Settings = () => {
-
-  const navigate = useNavigation<NativeStackNavigationProp<RootStackParamList>>()
-  const {removeUserFromRook} = useRookConfiguration()
+  const navigate =
+    useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const {removeUserFromRook} = useRookConfiguration();
 
   const handleLogOut = () => {
-    Alert.alert(
-      "Log Out", 
-      "Are you sure you want to log out?",
-      [
-        {
-          text: "Cancel",
-          style: "cancel"
-        },
-        { 
-          text: "OK", 
-          onPress: async () => {
-            const sources = Platform.OS === 'ios' 
+    Alert.alert('Log Out', 'Are you sure you want to log out?', [
+      {
+        text: 'Cancel',
+        style: 'cancel',
+      },
+      {
+        text: 'OK',
+        onPress: async () => {
+          const sources =
+            Platform.OS === 'ios'
               ? [SDKDataSource.APPLE_HEALTH]
-              : [SDKDataSource.HEALTH_CONNECT, SDKDataSource.SAMSUNG_HEALTH]
+              : [SDKDataSource.HEALTH_CONNECT, SDKDataSource.SAMSUNG_HEALTH];
 
-            await removeUserFromRook(sources)
+          await removeUserFromRook(sources);
 
-            navigate.reset({
-              index: 0,
-              routes: [{ name: 'Login' }],
-            });
-          },
-          style: 'destructive',
-        }
-      ]
-    );
-  }
+          navigate.reset({
+            index: 0,
+            routes: [{name: 'Login'}],
+          });
+        },
+        style: 'destructive',
+      },
+    ]);
+  };
 
   return (
-    <SafeAreaView style = { styles.container }>
-      <Pressable 
-        style = { styles.optionRow }
-        onPress = {() => navigate.navigate("Sources", {
-          prev: "Settings"
-        })}
-      >
-        <Text style = { styles.title }>Manage connections</Text>
+    <SafeAreaView style={styles.container}>
+      <Pressable
+        style={styles.optionRow}
+        onPress={() =>
+          navigate.navigate('Sources', {
+            prev: 'Settings',
+          })
+        }>
+        <Text style={styles.title}>Manage connections</Text>
 
-        <Ionicons 
-          name="chevron-forward-outline" 
-          size={24} 
-          color="black" 
-        />
+        <Ionicons name="chevron-forward-outline" size={24} color="black" />
       </Pressable>
 
-      <Pressable 
-        style = { styles.optionRow }
-        onPress = {handleLogOut}
-      >
-        <Text style = {[ styles.title, styles.logOut ]}>Log out</Text>
+      <Pressable style={styles.optionRow} onPress={handleLogOut}>
+        <Text style={[styles.title, styles.logOut]}>Log out</Text>
 
-        <Ionicons 
-          name="log-out-outline" 
-          size={24} 
-          color="#F52222" 
-        />
+        <Ionicons name="log-out-outline" size={24} color="#F52222" />
       </Pressable>
     </SafeAreaView>
-  )
-}
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "white",
+    backgroundColor: 'white',
     flex: 1,
-    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0
+    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
   },
   optionRow: {
-    marginHorizontal: "2.5%",
+    marginHorizontal: '2.5%',
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
@@ -101,7 +89,6 @@ const styles = StyleSheet.create({
     fontSize: 15,
   },
   logOut: {
-    color: '#F52222'
-  }
+    color: '#F52222',
+  },
 });
-

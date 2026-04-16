@@ -1,11 +1,9 @@
 import React, {type FC, useState, useEffect} from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   View,
   FlatList,
   ActivityIndicator,
   StyleSheet,
-  SafeAreaView,
   StatusBar,
   Text,
   Pressable,
@@ -13,23 +11,23 @@ import {
   Alert,
   Linking,
 } from 'react-native';
-import {useRookDataSources} from 'react-native-rook-sdk';
+import {useRookAPISources} from 'react-native-rook-sdk';
+import {SafeAreaView} from 'react-native-safe-area-context';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {RouteProp, useNavigation} from '@react-navigation/native';
 import {
-  DataSourceType,
-} from 'react-native-rook-sdk/lib/typescript/src/types/DataSource';
-import {
   useRookAppleHealth,
   useRookPermissions,
-  useRookConfiguration,
+  useRookSamsungHealth,
   useRookHealthConnect,
+  useRookConfiguration,
+  type AuthorizedSource,
+  APIDataSource,
 } from 'react-native-rook-sdk';
 import Provider from '../components/Provider';
 import {ContinueButton} from '../components/ContinueButton';
 import {RootStackParamList} from '../App';
-import {AuthorizedSource} from 'react-native-rook-sdk/lib/typescript/src/types/AuthorizedSources';
 
 type SourcesScreenRouteProp = RouteProp<RootStackParamList, 'Sources'>;
 
@@ -60,7 +58,7 @@ export const Sources: FC<Props> = ({route}) => {
     getAuthorizedDataSourcesV2,
     getDataSourceAuthorizer,
     revokeDataSource,
-  } = useRookDataSources();
+  } = useRookAPISources();
 
   const [isLoading, setIsLoading] = useState(true);
   const [providers, setProviders] = useState<AuthorizedSource[]>([]);
@@ -68,23 +66,25 @@ export const Sources: FC<Props> = ({route}) => {
   const navigate =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
+  const {getUserID} = useRookConfiguration();
+
   const {
     ready,
-    isBackGroundForSummariesEnable,
+    isBackgroundUpdatesEnabled,
     enableBackGroundUpdates,
     disableBackGroundUpdates,
   } = useRookAppleHealth();
 
   const {
-    checkAvailability,
+    checkHealthConnectAvailability,
     checkSamsungAvailability,
-    requestAllAppleHealthPermissions,
-    requestAllHealthConnectPermissions,
+    requestAppleHealthPermissions,
+    requestHealthConnectPermissions,
     requestSamsungHealthPermissions,
   } = useRookPermissions();
 
   const {isSamsungSyncEnabled, enableSamsungSync, disableSamsungSync} =
-    useRookConfiguration();
+    useRookSamsungHealth();
 
   const {
     cancelBackgroundSync,
@@ -98,7 +98,8 @@ export const Sources: FC<Props> = ({route}) => {
 
   const loadDataSources = async () => {
     try {
-      const availableDataSources = await getAuthorizedDataSourcesV2();
+      const userId = await getUserID();
+      const availableDataSources = await getAuthorizedDataSourcesV2(userId);
 
       const filtered = availableDataSources.filter(e => {
         return !UNAVAILABLE.includes(e.name);
@@ -110,7 +111,8 @@ export const Sources: FC<Props> = ({route}) => {
         const result = await formAppleHealthSource();
         extra.push(result);
       } else {
-        const healthConnectAvailability = await checkAvailability();
+        const healthConnectAvailability =
+          await checkHealthConnectAvailability();
         const samsungAvailability = await checkSamsungAvailability();
 
         if (healthConnectAvailability === 'INSTALLED') {
@@ -168,7 +170,7 @@ export const Sources: FC<Props> = ({route}) => {
     let connected = false;
 
     try {
-      connected = await isBackGroundForSummariesEnable();
+      connected = await isBackgroundUpdatesEnabled();
       console.log({apple: connected});
     } catch (error) {
       console.log(error);
@@ -182,37 +184,23 @@ export const Sources: FC<Props> = ({route}) => {
   };
 
   const handleApple = async (status: boolean): Promise<boolean> => {
-    let value = false;
-
     if (status) {
       await disableBackGroundUpdates();
     } else {
-      value = true;
-      await requestAllAppleHealthPermissions();
+      await requestAppleHealthPermissions();
       await enableBackGroundUpdates();
     }
-
-    AsyncStorage.setItem('enableBackgroundSync', `${value}`)
-      .then()
-      .catch(console.log);
 
     return !status;
   };
 
   const handleHealthConnect = async (status: boolean) => {
-    let value = false;
-
     if (status) {
       await cancelBackgroundSync();
     } else {
-      value = true;
-      await requestAllHealthConnectPermissions();
+      await requestHealthConnectPermissions();
       await scheduleBackgroundSync();
     }
-
-    AsyncStorage.setItem('enableBackgroundSync', `${value}`)
-      .then()
-      .catch(console.log);
 
     return !status;
   };
@@ -228,25 +216,27 @@ export const Sources: FC<Props> = ({route}) => {
       await enableSamsungSync();
     }
 
-    AsyncStorage.setItem('enableBackgroundSync', `${value}`)
-      .then()
-      .catch(console.log);
-
     return !status;
   };
 
   const handleAPISource = async ({name, connected}: SourceDetails) => {
+    const userId = await getUserID();
+    const type =
+      APIDataSource[name.toUpperCase() as keyof typeof APIDataSource];
+    console.log(type, name);
+
     if (connected) {
-      const result = await revokeDataSource(name as DataSourceType);
+      const result = await revokeDataSource(userId, type);
       console.log(result);
     } else {
-      const { authorizationUrl } = await getDataSourceAuthorizer({
+      const {authorizationUrl} = await getDataSourceAuthorizer({
+        userID: userId,
         redirectURL: 'https://react.d1kx6n00xlijg7.amplifyapp.com/',
-        dataSource: name as DataSourceType,
+        dataSource: type,
       });
 
-      if (authorizationUrl) Linking.openURL(authorizationUrl)
-      else throw new Error("Not authorization url recieved"); 
+      if (authorizationUrl) Linking.openURL(authorizationUrl);
+      else throw new Error('Not authorization url recieved');
     }
 
     return !connected;
@@ -281,7 +271,7 @@ export const Sources: FC<Props> = ({route}) => {
 
       setProviders(updatedSources);
     } catch (error) {
-      console.error(error)
+      console.error(error);
       Alert.alert('Error', 'Something went wrong. Please try again.', [
         {
           text: 'OK',

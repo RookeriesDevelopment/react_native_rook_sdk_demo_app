@@ -1,9 +1,7 @@
 import React, {useEffect, useState} from 'react';
-import {NativeEventEmitter} from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import {RookSyncGate, getRookModule} from 'react-native-rook-sdk';
+import {RookSyncGate, RookSdk} from 'react-native-rook-sdk';
 import {credentials} from './utils/credentials';
 import {Login} from './screens/Login';
 import {Sources} from './screens/Sources';
@@ -20,20 +18,20 @@ export type RootStackParamList = {
 };
 
 export default function App() {
-  const [bgStatus, setBgStatus] = useState(false)
-
   useEffect(() => {
-    checkBackgroundSyncStatus();
-
-    const eventEmitter = new NativeEventEmitter(getRookModule());
-    const subscription = eventEmitter.addListener(
-      "ROOK_NOTIFICATION",
-      handleRookNotification
+    /*
+    const listener = RookSdk.onRookMessage(e =>
+      handleRookNotification({
+        type: e.type,
+        value: e.value,
+        message: e.message,
+      }),
     );
 
-    return (() => {
-      subscription.remove()
-    })
+    return () => {
+      listener.remove();
+    };
+  */
   }, []);
 
   const handleRookNotification = (notification: {
@@ -72,26 +70,15 @@ export default function App() {
     }
   };
 
-  const checkBackgroundSyncStatus = async () => {
-    try {
-      const value = await AsyncStorage.getItem('enableBackgroundSync');
-
-      if (value === null) throw new Error('No value');
-
-      setBgStatus(JSON.parse(value!) as boolean);
-      console.log('finished. . .', value);
-    } catch (error) {
-      setBgStatus(false)
-    }
-  };
-
   return (
     <RookSyncGate
       environment="sandbox"
       clientUUID={credentials.uuid}
-      password={credentials.pwd}
+      secret={credentials.pwd}
+      packageName={credentials.app}
+      bundleId={credentials.app}
       enableLogs={true}
-      enableBackgroundSync={bgStatus}>
+      enableBackgroundSync>
       <NavigationContainer>
         <Stack.Navigator>
           <Stack.Screen
