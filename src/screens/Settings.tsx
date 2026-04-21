@@ -8,7 +8,7 @@ import {
   StatusBar,
   View,
 } from 'react-native';
-import Ionicons from 'react-native-vector-icons/Ionicons';
+import {Ionicons} from '@react-native-vector-icons/ionicons';
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {useRookConfiguration, SDKDataSource} from 'react-native-rook-sdk';

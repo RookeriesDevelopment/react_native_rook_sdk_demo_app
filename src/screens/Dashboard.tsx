@@ -39,14 +39,16 @@ export const Dashboard = () => {
   const printPhysicalSummary = async () => {
     try {
       let source: SDKDataSource | undefined;
-      const isSamsungAvailable = await checkSamsungAvailability();
-      const isHealthConnectAvailable = await checkHealthConnectAvailability();
 
       if (Platform.OS === 'android') {
+        const isSamsungAvailable = await checkSamsungAvailability();
+        const isHealthConnectAvailable = await checkHealthConnectAvailability();
+
         if (isSamsungAvailable) source = SDKDataSource.SAMSUNG_HEALTH;
         if (isHealthConnectAvailable) source = SDKDataSource.HEALTH_CONNECT;
       } else source = SDKDataSource.APPLE_HEALTH;
 
+      console.log(source);
       if (!source) return;
 
       const currentDate = new Date().toISOString().split('T')[0];
@@ -55,6 +57,7 @@ export const Dashboard = () => {
         date: currentDate,
         source,
       });
+
       console.log(result);
     } catch (error) {
       console.log(error);

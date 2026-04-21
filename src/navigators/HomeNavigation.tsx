@@ -1,9 +1,9 @@
 /* eslint-disable react/no-unstable-nested-components */
 import React from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import Ionicons from 'react-native-vector-icons/Ionicons';
+import {Ionicons} from '@react-native-vector-icons/ionicons';
 import {Dashboard} from '../screens/Dashboard';
-import {Settings} from '../screens/Settings'
+import {Settings} from '../screens/Settings';
 
 const Tab = createBottomTabNavigator();
 
@@ -26,17 +26,16 @@ export const HomeNavigation = () => {
         tabBarActiveTintColor: '#A0E984',
         tabBarInactiveTintColor: '#ABB7C2',
       })}>
-
-      <Tab.Screen 
-        name="Home" 
-        component={Dashboard} 
-        options = {{ headerShown: false}}
+      <Tab.Screen
+        name="Home"
+        component={Dashboard}
+        options={{headerShown: false}}
       />
 
-      <Tab.Screen 
-        name="Settings" 
-        component={Settings} 
-        options={{ headerShown: false}} 
+      <Tab.Screen
+        name="Settings"
+        component={Settings}
+        options={{headerShown: false}}
       />
     </Tab.Navigator>
   );
