@@ -20,20 +20,20 @@ export type RootStackParamList = {
 };
 
 export default function App() {
-  const [bgStatus, setBgStatus] = useState(false)
+  const [bgStatus, setBgStatus] = useState(false);
 
   useEffect(() => {
     checkBackgroundSyncStatus();
 
     const eventEmitter = new NativeEventEmitter(getRookModule());
     const subscription = eventEmitter.addListener(
-      "ROOK_NOTIFICATION",
-      handleRookNotification
+      'ROOK_NOTIFICATION',
+      handleRookNotification,
     );
 
-    return (() => {
-      subscription.remove()
-    })
+    return () => {
+      subscription.remove();
+    };
   }, []);
 
   const handleRookNotification = (notification: {
@@ -81,7 +81,7 @@ export default function App() {
       setBgStatus(JSON.parse(value!) as boolean);
       console.log('finished. . .', value);
     } catch (error) {
-      setBgStatus(false)
+      setBgStatus(false);
     }
   };
 
@@ -89,7 +89,9 @@ export default function App() {
     <RookSyncGate
       environment="sandbox"
       clientUUID={credentials.uuid}
-      password={credentials.pwd}
+      bundleId={credentials.app}
+      packageName={credentials.app}
+      secret={credentials.pwd}
       enableLogs={true}
       enableBackgroundSync={bgStatus}>
       <NavigationContainer>
