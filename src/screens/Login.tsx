@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import {
   View,
   Text,
@@ -35,7 +35,9 @@ export const Login = () => {
       await yourLoginService(`${userID}`);
       await updateUserID(userID);
 
-      navigation.navigate('Sources', {prev: 'Login'});
+      if (Platform.OS === 'android')
+        navigation.navigate('BateryOptimization', {prev: 'Login'});
+      else navigation.navigate('Sources', {prev: 'Login'});
     } catch (error) {
       console.log(error);
     } finally {

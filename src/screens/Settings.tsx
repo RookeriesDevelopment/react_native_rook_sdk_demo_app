@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {Activity} from 'react';
 import {
   Alert,
   Text,
@@ -59,6 +59,18 @@ export const Settings = () => {
 
         <Ionicons name="chevron-forward-outline" size={24} color="black" />
       </Pressable>
+
+      <Activity mode={Platform.OS === 'android' ? 'visible' : 'hidden'}>
+        <Pressable
+          style={styles.optionRow}
+          onPress={() =>
+            navigate.navigate('BateryOptimization', {prev: 'Settings'})
+          }>
+          <Text style={styles.title}>App Optimizations</Text>
+
+          <Ionicons name="chevron-forward-outline" size={24} color="black" />
+        </Pressable>
+      </Activity>
 
       <Pressable style={styles.optionRow} onPress={handleLogOut}>
         <Text style={[styles.title, styles.logOut]}>Log out</Text>

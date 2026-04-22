@@ -1,47 +1,40 @@
 import React from 'react';
-import {
-  View,
-  Text,
-  Image,
-  Pressable,
-  StyleSheet,
- } from 'react-native';
+import {View, Text, Image, Pressable, StyleSheet} from 'react-native';
 
 type Params = {
-  name: string, 
-  connected: boolean,
-}
+  name: string;
+  connected: boolean;
+};
 
 interface Props {
   imageURL: string;
   name: string;
   connected: boolean;
-  onPress: (params: Params) => Promise<void>
+  onPress: (params: Params) => Promise<void>;
 }
 
-const Provider: React.FC<Props> = ({ imageURL, connected, name, onPress }) => {
+const Provider: React.FC<Props> = ({imageURL, connected, name, onPress}) => {
   const handlePress = async () => {
-    await onPress({name, connected})
+    await onPress({name, connected});
   };
 
   return (
-    <View style = { styles.container }>
-      <View style ={ styles.nameContainer }>
+    <View style={styles.container}>
+      <View style={styles.nameContainer}>
         <Image
-          source={typeof imageURL === 'number' ? imageURL : { uri: imageURL }}
-          style={{ width: 50, height: 50, marginRight: 10 }}
+          source={typeof imageURL === 'number' ? imageURL : {uri: imageURL}}
+          style={{width: 50, height: 50, marginRight: 10}}
+          resizeMode="contain"
         />
 
-        <Text style = { styles.title }>{name}</Text>
+        <Text style={styles.title}>{name}</Text>
       </View>
 
       <Pressable
         onPress={handlePress}
-        style={[ styles.button, connected ? styles.disconect : styles.connect]}
-      >
-        <Text>{ connected ? "Disconnect" : "Connect" }</Text>
+        style={[styles.button, connected ? styles.disconect : styles.connect]}>
+        <Text>{connected ? 'Disconnect' : 'Connect'}</Text>
       </Pressable>
-
     </View>
   );
 };
@@ -57,16 +50,16 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
   },
-  nameContainer:{
+  nameContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 10
+    gap: 10,
   },
   title: {
     fontFamily: 'Poppins',
-    fontSize: 16
+    fontSize: 16,
   },
-  button:{
+  button: {
     paddingVertical: 5,
     paddingHorizontal: 10,
     borderRadius: 10,
@@ -75,9 +68,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#A0E984',
   },
   disconect: {
-    backgroundColor: '#F52222'
-  }
+    backgroundColor: '#F52222',
+  },
 });
 
 export default Provider;
-

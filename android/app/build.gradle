@@ -75,6 +75,7 @@ android {
     ndkVersion rootProject.ext.ndkVersion
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
+    compileSdkExtension 19
 
     namespace "com.rooksdkdemo"
     defaultConfig {

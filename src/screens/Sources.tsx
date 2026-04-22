@@ -22,12 +22,14 @@ import {
   useRookSamsungHealth,
   useRookHealthConnect,
   useRookConfiguration,
+  useRookAndroidStepCounter,
   type AuthorizedSource,
   APIDataSource,
 } from 'react-native-rook-sdk';
 import Provider from '../components/Provider';
 import {ContinueButton} from '../components/ContinueButton';
 import {RootStackParamList} from '../App';
+import {AndroidStepsModal} from '../components/AndroidStepModal';
 
 type SourcesScreenRouteProp = RouteProp<RootStackParamList, 'Sources'>;
 
@@ -54,6 +56,10 @@ const UNAVAILABLE = [
 ];
 
 export const Sources: FC<Props> = ({route}) => {
+  const [showSetup, setShowSetup] = useState(false);
+  const [hasActivity, setHasActivity] = useState(false);
+  const [hasAlarm, setHasAlarm] = useState(false);
+
   const {
     getAuthorizedDataSourcesV2,
     getDataSourceAuthorizer,
@@ -76,12 +82,23 @@ export const Sources: FC<Props> = ({route}) => {
   } = useRookAppleHealth();
 
   const {
+    androidHasAlarmPermissions,
+    androidHasBackgroundPermissions,
     checkHealthConnectAvailability,
     checkSamsungAvailability,
+    requestAndroidAlarmPermissions,
+    requestAndroidBackgroundPermissions,
     requestAppleHealthPermissions,
     requestHealthConnectPermissions,
     requestSamsungHealthPermissions,
   } = useRookPermissions();
+
+  const {
+    isStepsCounterAvailable,
+    isStepsCounterActive,
+    enableStepsCounter,
+    disableStepsCounter,
+  } = useRookAndroidStepCounter();
 
   const {isSamsungSyncEnabled, enableSamsungSync, disableSamsungSync} =
     useRookSamsungHealth();
@@ -114,6 +131,7 @@ export const Sources: FC<Props> = ({route}) => {
         const healthConnectAvailability =
           await checkHealthConnectAvailability();
         const samsungAvailability = await checkSamsungAvailability();
+        const androidAvailability = await isStepsCounterAvailable();
 
         if (healthConnectAvailability === 'INSTALLED') {
           const hc = await formHealthConnect();
@@ -124,6 +142,11 @@ export const Sources: FC<Props> = ({route}) => {
           const sh = await formSamsungHealth();
           extra.push(sh);
         }
+
+        if (androidAvailability) {
+          const steps = await formAndroidSteps();
+          extra.push(steps);
+        }
       }
 
       setProviders([...extra, ...filtered]);
@@ -132,6 +155,22 @@ export const Sources: FC<Props> = ({route}) => {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const formAndroidSteps = async (): Promise<Sources> => {
+    let connected = false;
+
+    try {
+      connected = await isStepsCounterActive();
+    } catch (error) {
+      console.log(error);
+    }
+
+    return {
+      name: 'Android Steps tracker',
+      imageUrl: require('../../assets/images/android.png'),
+      authorized: connected,
+    };
   };
 
   const formHealthConnect = async (): Promise<Sources> => {
@@ -219,6 +258,27 @@ export const Sources: FC<Props> = ({route}) => {
     return !status;
   };
 
+  const handleAndroidSteps = async (status: boolean): Promise<boolean> => {
+    const androidPermission = await androidHasBackgroundPermissions();
+    const alarmPermissions = await androidHasAlarmPermissions();
+
+    setHasAlarm(alarmPermissions);
+    setHasActivity(androidPermission);
+
+    if (!androidPermission || !alarmPermissions) {
+      setShowSetup(true);
+      return false;
+    }
+
+    if (status) {
+      await disableStepsCounter();
+    } else {
+      await enableStepsCounter();
+    }
+
+    return !status;
+  };
+
   const handleAPISource = async ({name, connected}: SourceDetails) => {
     const userId = await getUserID();
     const type =
@@ -259,6 +319,9 @@ export const Sources: FC<Props> = ({route}) => {
         case 'Samsung Health':
           result = await handleSamsung(connected);
           break;
+        case 'Android Steps tracker':
+          result = await handleAndroidSteps(connected);
+          break;
         default:
           result = await handleAPISource({name, connected});
           break;
@@ -281,6 +344,39 @@ export const Sources: FC<Props> = ({route}) => {
     }
   };
 
+  const requestActivity = async () => {
+    try {
+      await requestAndroidBackgroundPermissions();
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const requestAlarm = async () => {
+    try {
+      await requestAndroidAlarmPermissions();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const onClose = async () => {
+    const androidPermission = await androidHasBackgroundPermissions();
+    const alarmPermissions = await androidHasAlarmPermissions();
+
+    setHasAlarm(alarmPermissions);
+    setHasActivity(androidPermission);
+
+    const updatedSources = providers.map(source => {
+      if (source.name === 'Android Steps tracker')
+        return {...source, authorized: androidPermission && alarmPermissions};
+      return source;
+    });
+
+    setShowSetup(false);
+    setProviders(updatedSources);
+  };
+
   return isLoading || !ready ? (
     <View style={styles.centered}>
       <ActivityIndicator size="large" />
@@ -288,6 +384,15 @@ export const Sources: FC<Props> = ({route}) => {
   ) : (
     <SafeAreaView style={styles.container}>
       <StatusBar backgroundColor="white" barStyle="dark-content" />
+
+      <AndroidStepsModal
+        visible={showSetup}
+        onClose={onClose}
+        activityGranted={hasActivity}
+        alarmGranted={hasAlarm}
+        onGrantActivity={requestActivity}
+        onGrantAlarm={requestAlarm}
+      />
 
       <View style={styles.navigation}>
         {route?.params?.prev === 'Settings' && (
@@ -320,7 +425,7 @@ export const Sources: FC<Props> = ({route}) => {
         />
       </View>
 
-      {route?.params?.prev === 'Login' && (
+      {['Login', 'BateryOptimization'].includes(route?.params?.prev || '') && (
         <View style={styles.continue}>
           <ContinueButton onPress={() => navigate.navigate('Dashboard')} />
         </View>
