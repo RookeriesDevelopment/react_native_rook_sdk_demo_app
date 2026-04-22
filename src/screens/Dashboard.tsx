@@ -7,18 +7,24 @@ import {
   useRookPermissions,
   SDKDataSource,
   useRookData,
+  useRookAndroidStepCounter,
 } from 'react-native-rook-sdk';
 import {useIsFocused} from '@react-navigation/native';
 import {Stat} from '../components/Stat';
 import {SafeAreaView} from 'react-native-safe-area-context';
 
 export const Dashboard = () => {
-  const [currentSteps, setCurrentSteps] = useState('');
-  const [currentCalories, setCurrentCalories] = useState('');
+  const [currentSteps, setCurrentSteps] = useState('0');
+  const [currentCalories, setCurrentCalories] = useState('0');
 
   const isFocused = useIsFocused();
 
+  const {isStepsCounterActive, enableStepsCounter, getTodayStepsCount} =
+    useRookAndroidStepCounter();
+
   const {
+    androidHasAlarmPermissions,
+    androidHasBackgroundPermissions,
     checkHealthConnectAvailability,
     checkSamsungAvailability,
     healthConnectHasPartialPermissions,
@@ -30,11 +36,30 @@ export const Dashboard = () => {
   const {sync} = useRookSync();
 
   useEffect(() => {
+    tryToStartSteps();
     syncSteps();
     syncCalories();
     sync(console.log);
     printPhysicalSummary();
   }, [isFocused]);
+
+  const tryToStartSteps = async () => {
+    try {
+      const isActive = await isStepsCounterActive();
+      if (isActive) return;
+
+      const [androidPerm, alarmPerm] = await Promise.all([
+        androidHasAlarmPermissions(),
+        androidHasBackgroundPermissions(),
+      ]);
+
+      if (!androidPerm || !alarmPerm) return;
+
+      await enableStepsCounter();
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const printPhysicalSummary = async () => {
     try {
@@ -70,12 +95,15 @@ export const Dashboard = () => {
         const steps = await getTodaySteps(SDKDataSource.APPLE_HEALTH);
         setCurrentSteps(steps);
       } else {
-        let steps = '';
+        let steps = '0';
 
         if (await checkSamsungHealth()) {
           steps = await getTodaySteps(SDKDataSource.SAMSUNG_HEALTH);
         } else if (await checkHealhConnect()) {
           steps = await getTodaySteps(SDKDataSource.HEALTH_CONNECT);
+        } else if (await isStepsCounterActive()) {
+          const result = await getTodayStepsCount();
+          steps = `${result}`;
         }
         setCurrentSteps(steps);
       }
