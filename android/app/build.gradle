@@ -92,6 +92,12 @@ android {
             keyAlias 'androiddebugkey'
             keyPassword 'android'
         }
+        release {
+            storeFile file('rook-demo.keystore')
+            storePassword 'rookdemo'
+            keyAlias 'rook-demo'
+            keyPassword 'rookdemo'
+        }
     }
     buildTypes {
         debug {
@@ -110,7 +116,7 @@ android {
 dependencies {
     // The version of react-native is set by the React Native Gradle Plugin
     implementation("com.facebook.react:react-android")
-    implementation(files("$rootDir/libs/samsung-health-data-api-1.0.0-b2.aar"))
+    implementation(files("$rootDir/libs/samsung-health-data-api-1.0.0.aar"))
 
     if (hermesEnabled.toBoolean()) {
         implementation("com.facebook.react:hermes-android")

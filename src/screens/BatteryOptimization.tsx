@@ -1,4 +1,4 @@
-import React, {FC} from 'react';
+import React, {Activity, FC} from 'react';
 import {
   Pressable,
   StyleSheet,
@@ -13,6 +13,8 @@ import {Ionicons} from '@react-native-vector-icons/ionicons';
 import {RouteProp, useNavigation} from '@react-navigation/native';
 import {ContinueButton} from '../components/ContinueButton';
 import {RootStackParamList} from '../App';
+import {useOptimizations} from '../hooks/useOptimizations';
+import {useRookPermissions} from 'react-native-rook-sdk';
 
 type BateryScreenRouteProp = RouteProp<
   RootStackParamList,
@@ -24,17 +26,31 @@ type Props = {
 };
 
 export const BatteryOptimization: FC<Props> = ({route}) => {
+  const {showBatteryButton, showAutoStartAlert, refreshStatuses} =
+    useOptimizations();
+
+  const {requestUnrestrictedBatteryUsage, openAutoStartSettings} =
+    useRookPermissions();
+
   const navigate =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
-  const handleDisableBatteryOptimization = () => {
-    // TODO: Implement logic to open Battery Optimization settings
-    console.log('Action: Requesting to disable battery optimization');
+  const handleDisableBatteryOptimization = async () => {
+    try {
+      await requestUnrestrictedBatteryUsage();
+      await refreshStatuses();
+    } catch (error) {
+      console.log(error);
+    }
   };
 
-  const handleEnableAutoLaunch = () => {
-    // TODO: Implement logic to open Auto-launch / Startup manager settings
-    console.log('Action: Requesting to enable auto-launch');
+  const handleEnableAutoLaunch = async () => {
+    try {
+      await openAutoStartSettings();
+      await refreshStatuses();
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -58,28 +74,34 @@ export const BatteryOptimization: FC<Props> = ({route}) => {
           in the background, it is necessary to adjust your device settings.
         </Text>
 
-        {/* Action Buttons */}
         <View style={styles.buttonContainer}>
-          <View style={styles.buttonWrapper}>
-            <Pressable
-              style={styles.button}
-              onPress={handleDisableBatteryOptimization}>
-              <Text style={styles.buttonText}>
-                Disable Battery Optimization
-              </Text>
-            </Pressable>
-          </View>
+          <Activity mode={showBatteryButton ? 'visible' : 'hidden'}>
+            <View style={styles.buttonWrapper}>
+              <Pressable
+                style={styles.button}
+                onPress={handleDisableBatteryOptimization}>
+                <Text style={styles.buttonText}>
+                  Disable Battery Optimization
+                </Text>
+              </Pressable>
+            </View>
+          </Activity>
 
-          <View style={styles.buttonWrapper}>
-            <Pressable
-              style={styles.button}
-              onPress={handleDisableBatteryOptimization}>
-              <Text style={styles.buttonText}>
-                Disable Battery Optimization
-              </Text>
-            </Pressable>{' '}
-          </View>
+          <Activity mode={showAutoStartAlert ? 'visible' : 'hidden'}>
+            <View style={styles.buttonWrapper}>
+              <Pressable style={styles.button} onPress={handleEnableAutoLaunch}>
+                <Text style={styles.buttonText}>Enable Autolaunch</Text>
+              </Pressable>{' '}
+            </View>
+          </Activity>
         </View>
+
+        <Activity
+          mode={
+            !showAutoStartAlert && !showBatteryButton ? 'visible' : 'hidden'
+          }>
+          <Text style={styles.title}>All configurations applied</Text>
+        </Activity>
       </View>
 
       {['Login'].includes(route?.params?.prev || '') && (
