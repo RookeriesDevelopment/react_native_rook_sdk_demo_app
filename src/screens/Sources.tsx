@@ -131,7 +131,7 @@ export const Sources: FC<Props> = ({route}) => {
         const healthConnectAvailability =
           await checkHealthConnectAvailability();
         const samsungAvailability = await checkSamsungAvailability();
-        const androidAvailability = await isStepsCounterAvailable();
+        let androidAvailability = await isStepsCounterAvailable();
 
         if (healthConnectAvailability === 'INSTALLED') {
           const hc = await formHealthConnect();
@@ -143,6 +143,7 @@ export const Sources: FC<Props> = ({route}) => {
           extra.push(sh);
         }
 
+        androidAvailability = true;
         if (androidAvailability) {
           const steps = await formAndroidSteps();
           extra.push(steps);
@@ -366,6 +367,13 @@ export const Sources: FC<Props> = ({route}) => {
 
     setHasAlarm(alarmPermissions);
     setHasActivity(androidPermission);
+
+    if (!alarmPermissions && !androidPermission) {
+      setShowSetup(false);
+      return;
+    }
+
+    await enableStepsCounter();
 
     const updatedSources = providers.map(source => {
       if (source.name === 'Android Steps tracker')

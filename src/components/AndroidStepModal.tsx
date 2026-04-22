@@ -6,6 +6,7 @@ import {
   Button,
   Modal,
   TouchableOpacity,
+  Pressable,
 } from 'react-native';
 
 /**
@@ -44,62 +45,43 @@ export const AndroidStepsModal = ({
           {/* --- STEP 1: ACTIVITY --- */}
           <View style={[styles.stepRow, activityGranted && styles.stepDone]}>
             <View style={styles.stepNumber}>
-              <Text style={styles.stepNumberText}>
-                {activityGranted ? '✓' : '1'}
-              </Text>
+              <Text style={styles.stepNumberText}>1</Text>
             </View>
             <View style={styles.stepContent}>
               <Text style={styles.stepTitle}>Activity Tracking</Text>
               <Text style={styles.stepDesc}>
                 Allows the app to detect physical steps.
               </Text>
-              {!activityGranted && (
-                <View style={styles.btnAction}>
-                  <Button title="Allow Access" onPress={onGrantActivity} />
-                </View>
-              )}
+              <View style={styles.btnAction}>
+                <Pressable style={styles.button} onPress={onGrantActivity}>
+                  <Text style={styles.buttonText}>Allow Access</Text>
+                </Pressable>
+              </View>
             </View>
           </View>
 
-          {/* --- STEP 2: ALARMS --- */}
-          <View
-            style={[
-              styles.stepRow,
-              step2Disabled && styles.stepDisabled,
-              alarmGranted && styles.stepDone,
-            ]}>
+          <View style={[styles.stepRow]}>
             <View style={styles.stepNumber}>
-              <Text style={styles.stepNumberText}>
-                {alarmGranted ? '✓' : '2'}
-              </Text>
+              <Text style={styles.stepNumberText}>2</Text>
             </View>
             <View style={styles.stepContent}>
-              <Text style={styles.stepTitle}>Background Sync</Text>
+              <Text style={styles.stepTitle}>Alarms</Text>
               <Text style={styles.stepDesc}>
                 Necessary to sync data while the app is closed.
               </Text>
-              {activityGranted && !alarmGranted && (
-                <View style={styles.btnAction}>
-                  <Button
-                    title="Open Settings"
-                    onPress={onGrantAlarm}
-                    color="#5856D6"
-                  />
-                </View>
-              )}
+              <View style={styles.btnAction}>
+                <Pressable style={styles.button} onPress={onGrantAlarm}>
+                  <Text style={styles.buttonText}>Open Settings</Text>
+                </Pressable>
+              </View>
             </View>
           </View>
 
           {/* --- FOOTER --- */}
           <View style={styles.footer}>
-            <TouchableOpacity
-              style={[styles.closeBtn, !allDone && styles.closeBtnDisabled]}
-              onPress={onClose}
-              disabled={!allDone}>
-              <Text style={styles.closeBtnText}>
-                {allDone ? 'Done' : 'Complete steps to continue'}
-              </Text>
-            </TouchableOpacity>
+            <Pressable style={styles.button} onPress={onClose}>
+              <Text style={styles.buttonText}>Continue</Text>
+            </Pressable>
           </View>
         </View>
       </View>
@@ -150,13 +132,13 @@ const styles = StyleSheet.create({
     opacity: 0.4,
   },
   stepDone: {
-    backgroundColor: '#E8F5E9',
+    backgroundColor: '#F9F9F9',
   },
   stepNumber: {
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: '#007AFF',
+    backgroundColor: '#A0E984',
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 12,
@@ -180,9 +162,11 @@ const styles = StyleSheet.create({
   btnAction: {
     marginTop: 8,
     alignSelf: 'flex-start',
+    backgroundColor: '#A0E984',
   },
   footer: {
     marginTop: 10,
+    backgroundColor: '#A0E984',
   },
   closeBtn: {
     backgroundColor: '#000',
@@ -191,10 +175,25 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   closeBtnDisabled: {
-    backgroundColor: '#CCC',
+    backgroundColor: '#A0E984',
+    paddingVertical: 15,
+    paddingHorizontal: '5%',
+    alignItems: 'center',
+    borderRadius: 10,
   },
   closeBtnText: {
-    color: 'white',
-    fontWeight: 'bold',
+    fontFamily: 'Poppins',
+    fontSize: 15,
+  },
+  button: {
+    backgroundColor: '#A0E984',
+    paddingVertical: 15,
+    paddingHorizontal: '5%',
+    alignItems: 'center',
+    borderRadius: 10,
+  },
+  buttonText: {
+    fontFamily: 'Poppins',
+    fontSize: 15,
   },
 });
