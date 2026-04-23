@@ -11,6 +11,13 @@ buildscript {
         google()
         mavenCentral()
     }
+    allprojects {
+        repositories {
+            maven {
+                url = uri(project(":react-native-async-storage_async-storage").file("local_repo"))
+            }
+        }
+    }
     dependencies {
         classpath("com.android.tools.build:gradle")
         classpath("com.facebook.react:react-native-gradle-plugin")

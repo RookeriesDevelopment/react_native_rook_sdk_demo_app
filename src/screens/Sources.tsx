@@ -30,6 +30,7 @@ import Provider from '../components/Provider';
 import {ContinueButton} from '../components/ContinueButton';
 import {RootStackParamList} from '../App';
 import {AndroidStepsModal} from '../components/AndroidStepModal';
+import {userPreferences} from '../utils/userPreferences';
 
 type SourcesScreenRouteProp = RouteProp<RootStackParamList, 'Sources'>;
 
@@ -297,6 +298,10 @@ export const Sources: FC<Props> = ({route}) => {
       await enableStepsCounter();
     }
 
+    await userPreferences.savePreference(
+      'android_step_tracker',
+      (!status).toString(),
+    );
     return !status;
   };
 
@@ -382,27 +387,34 @@ export const Sources: FC<Props> = ({route}) => {
   };
 
   const onClose = async () => {
-    const androidPermission = await androidHasBackgroundPermissions();
-    const alarmPermissions = await androidHasAlarmPermissions();
+    try {
+      const androidPermission = await androidHasBackgroundPermissions();
+      const alarmPermissions = await androidHasAlarmPermissions();
 
-    setHasAlarm(alarmPermissions);
-    setHasActivity(androidPermission);
+      setHasAlarm(alarmPermissions);
+      setHasActivity(androidPermission);
 
-    if (!alarmPermissions && !androidPermission) {
+      if (!alarmPermissions && !androidPermission) {
+        setShowSetup(false);
+        return;
+      }
+
+      await enableStepsCounter();
+
+      await userPreferences.savePreference('android_step_tracker', 'true');
+
+      const updatedSources = providers.map(source => {
+        if (source.name === 'Android Steps tracker')
+          return {...source, authorized: androidPermission && alarmPermissions};
+        return source;
+      });
+
+      setProviders(updatedSources);
+    } catch (error) {
+      console.log(error);
+    } finally {
       setShowSetup(false);
-      return;
     }
-
-    await enableStepsCounter();
-
-    const updatedSources = providers.map(source => {
-      if (source.name === 'Android Steps tracker')
-        return {...source, authorized: androidPermission && alarmPermissions};
-      return source;
-    });
-
-    setShowSetup(false);
-    setProviders(updatedSources);
   };
 
   return isLoading || !ready ? (

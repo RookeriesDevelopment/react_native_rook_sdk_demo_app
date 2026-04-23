@@ -12,6 +12,7 @@ import {
 import {useIsFocused} from '@react-navigation/native';
 import {Stat} from '../components/Stat';
 import {SafeAreaView} from 'react-native-safe-area-context';
+import {userPreferences} from '../utils/userPreferences';
 
 export const Dashboard = () => {
   const [currentSteps, setCurrentSteps] = useState('0');
@@ -48,12 +49,15 @@ export const Dashboard = () => {
       const isActive = await isStepsCounterActive();
       if (isActive) return;
 
-      const [androidPerm, alarmPerm] = await Promise.all([
+      const [androidPerm, alarmPerm, preferences] = await Promise.all([
         androidHasAlarmPermissions(),
         androidHasBackgroundPermissions(),
+        userPreferences.getPreference('android_step_tracker'),
       ]);
 
-      if (!androidPerm || !alarmPerm) return;
+      const userEnabled = preferences === 'true';
+      console.log({androidPerm, alarmPerm, userEnabled});
+      if (!androidPerm || !alarmPerm || !userEnabled) return;
 
       await enableStepsCounter();
     } catch (error) {
