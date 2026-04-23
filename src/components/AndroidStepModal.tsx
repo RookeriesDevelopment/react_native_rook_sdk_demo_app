@@ -1,13 +1,5 @@
-import React, {useState} from 'react';
-import {
-  StyleSheet,
-  View,
-  Text,
-  Button,
-  Modal,
-  TouchableOpacity,
-  Pressable,
-} from 'react-native';
+import React, {Activity, useState} from 'react';
+import {StyleSheet, View, Text, Button, Modal, Pressable} from 'react-native';
 
 /**
  * @param visible - Controls modal visibility
@@ -60,22 +52,24 @@ export const AndroidStepsModal = ({
             </View>
           </View>
 
-          <View style={[styles.stepRow]}>
-            <View style={styles.stepNumber}>
-              <Text style={styles.stepNumberText}>2</Text>
-            </View>
-            <View style={styles.stepContent}>
-              <Text style={styles.stepTitle}>Alarms</Text>
-              <Text style={styles.stepDesc}>
-                Necessary to sync data while the app is closed.
-              </Text>
-              <View style={styles.btnAction}>
-                <Pressable style={styles.button} onPress={onGrantAlarm}>
-                  <Text style={styles.buttonText}>Open Settings</Text>
-                </Pressable>
+          <Activity mode={alarmGranted ? 'hidden' : 'visible'}>
+            <View style={[styles.stepRow]}>
+              <View style={styles.stepNumber}>
+                <Text style={styles.stepNumberText}>2</Text>
+              </View>
+              <View style={styles.stepContent}>
+                <Text style={styles.stepTitle}>Alarms</Text>
+                <Text style={styles.stepDesc}>
+                  Necessary to sync data while the app is closed.
+                </Text>
+                <View style={styles.btnAction}>
+                  <Pressable style={styles.button} onPress={onGrantAlarm}>
+                    <Text style={styles.buttonText}>Open Settings</Text>
+                  </Pressable>
+                </View>
               </View>
             </View>
-          </View>
+          </Activity>
 
           {/* --- FOOTER --- */}
           <View style={styles.footer}>

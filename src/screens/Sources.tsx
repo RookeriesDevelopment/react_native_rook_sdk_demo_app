@@ -111,7 +111,20 @@ export const Sources: FC<Props> = ({route}) => {
 
   useEffect(() => {
     loadDataSources();
+    loadStatus();
   }, []);
+
+  const loadStatus = async () => {
+    try {
+      const androidPermission = await androidHasBackgroundPermissions();
+      const alarmPermissions = await androidHasAlarmPermissions();
+
+      setHasAlarm(alarmPermissions);
+      setHasActivity(androidPermission);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const loadDataSources = async () => {
     try {
@@ -122,40 +135,47 @@ export const Sources: FC<Props> = ({route}) => {
         return !UNAVAILABLE.includes(e.name);
       });
 
-      const extra: AuthorizedSource[] = [];
-
-      if (Platform.OS === 'ios') {
-        const result = await formAppleHealthSource();
-        extra.push(result);
-      } else {
-        const healthConnectAvailability =
-          await checkHealthConnectAvailability();
-        const samsungAvailability = await checkSamsungAvailability();
-        let androidAvailability = await isStepsCounterAvailable();
-
-        if (healthConnectAvailability === 'INSTALLED') {
-          const hc = await formHealthConnect();
-          extra.push(hc);
-        }
-
-        if (samsungAvailability === 'INSTALLED') {
-          const sh = await formSamsungHealth();
-          extra.push(sh);
-        }
-
-        androidAvailability = true;
-        if (androidAvailability) {
-          const steps = await formAndroidSteps();
-          extra.push(steps);
-        }
-      }
-
-      setProviders([...extra, ...filtered]);
+      setProviders([...filtered]);
     } catch (error) {
       console.error('An error occurred trying to fetch the sources:', error);
     } finally {
+      const extra: AuthorizedSource[] = await addHealthKits();
+      setProviders(provided => [...extra, ...provided]);
+
       setIsLoading(false);
     }
+  };
+
+  const addHealthKits = async (): Promise<AuthorizedSource[]> => {
+    const extra: AuthorizedSource[] = [];
+
+    if (Platform.OS === 'ios') {
+      const result = await formAppleHealthSource();
+      extra.push(result);
+    } else {
+      const healthConnectAvailability = await checkHealthConnectAvailability();
+      const samsungAvailability = await checkSamsungAvailability();
+      let androidAvailability = await isStepsCounterAvailable();
+
+      if (healthConnectAvailability === 'INSTALLED') {
+        const hc = await formHealthConnect();
+        extra.push(hc);
+      }
+
+      console.log(samsungAvailability);
+
+      /*if (samsungAvailability === 'INSTALLED') {
+              const sh = await formSamsungHealth();
+              extra.push(sh);
+              }*/
+
+      androidAvailability = true;
+      if (androidAvailability) {
+        const steps = await formAndroidSteps();
+        extra.push(steps);
+      }
+    }
+    return extra;
   };
 
   const formAndroidSteps = async (): Promise<Sources> => {
