@@ -1,5 +1,5 @@
-import React from 'react';
-import {View, Text, Image, Pressable, StyleSheet} from 'react-native';
+import React, { Activity } from 'react';
+import { View, Text, Image, Pressable, StyleSheet } from 'react-native';
 
 type Params = {
   name: string;
@@ -10,31 +10,48 @@ interface Props {
   imageURL: string;
   name: string;
   connected: boolean;
+  available?: boolean
+  description?: string
   onPress: (params: Params) => Promise<void>;
 }
 
-const Provider: React.FC<Props> = ({imageURL, connected, name, onPress}) => {
+const Provider: React.FC<Props> = ({ imageURL, connected, name, available = true, description = "", onPress }) => {
   const handlePress = async () => {
-    await onPress({name, connected});
+    await onPress({ name, connected });
   };
 
   return (
     <View style={styles.container}>
       <View style={styles.nameContainer}>
         <Image
-          source={typeof imageURL === 'number' ? imageURL : {uri: imageURL}}
-          style={{width: 50, height: 50, marginRight: 10}}
+          source={typeof imageURL === 'number' ? imageURL : { uri: imageURL }}
+          style={{ width: 50, height: 50, marginRight: 10 }}
           resizeMode="contain"
         />
 
-        <Text style={styles.title}>{name}</Text>
+        <View>
+          <Text style={styles.title}>{name}</Text>
+
+          <Activity mode={description ? 'visible' : 'hidden'}>
+            <Text
+              numberOfLines={3}
+              ellipsizeMode='tail'
+              style={styles.description}
+            >
+              {description}
+            </Text>
+          </Activity>
+        </View>
+
       </View>
 
-      <Pressable
-        onPress={handlePress}
-        style={[styles.button, connected ? styles.disconect : styles.connect]}>
-        <Text>{connected ? 'Disconnect' : 'Connect'}</Text>
-      </Pressable>
+      <Activity mode={available ? "visible" : "hidden"}>
+        <Pressable
+          onPress={handlePress}
+          style={[styles.button, connected ? styles.disconect : styles.connect]}>
+          <Text>{connected ? 'Disconnect' : 'Connect'}</Text>
+        </Pressable>
+      </Activity>
     </View>
   );
 };
@@ -58,6 +75,10 @@ const styles = StyleSheet.create({
   title: {
     fontFamily: 'Poppins',
     fontSize: 16,
+  },
+  description: {
+    fontFamily: 'Poppins',
+    fontSize: 12
   },
   button: {
     paddingVertical: 5,

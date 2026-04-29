@@ -1,4 +1,4 @@
-import React, {type FC, useState, useEffect} from 'react';
+import React, { type FC, useState, useEffect } from 'react';
 import {
   View,
   FlatList,
@@ -11,11 +11,11 @@ import {
   Alert,
   Linking,
 } from 'react-native';
-import {useRookAPISources} from 'react-native-rook-sdk';
-import {SafeAreaView} from 'react-native-safe-area-context';
-import {Ionicons} from '@react-native-vector-icons/ionicons';
-import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import {RouteProp, useNavigation} from '@react-navigation/native';
+import { useRookAPISources } from 'react-native-rook-sdk';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { Ionicons } from '@react-native-vector-icons/ionicons';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RouteProp, useNavigation } from '@react-navigation/native';
 import {
   useRookAppleHealth,
   useRookPermissions,
@@ -27,10 +27,10 @@ import {
   APIDataSource,
 } from 'react-native-rook-sdk';
 import Provider from '../components/Provider';
-import {ContinueButton} from '../components/ContinueButton';
-import {RootStackParamList} from '../App';
-import {AndroidStepsModal} from '../components/AndroidStepModal';
-import {userPreferences} from '../utils/userPreferences';
+import { ContinueButton } from '../components/ContinueButton';
+import { RootStackParamList } from '../App';
+import { AndroidStepsModal } from '../components/AndroidStepModal';
+import { userPreferences } from '../utils/userPreferences';
 
 type SourcesScreenRouteProp = RouteProp<RootStackParamList, 'Sources'>;
 
@@ -56,7 +56,12 @@ const UNAVAILABLE = [
   'Strava',
 ];
 
-export const Sources: FC<Props> = ({route}) => {
+interface InternalSources extends AuthorizedSource {
+  description?: string,
+  available?: boolean,
+}
+
+export const Sources: FC<Props> = ({ route }) => {
   const [showSetup, setShowSetup] = useState(false);
   const [hasActivity, setHasActivity] = useState(false);
   const [hasAlarm, setHasAlarm] = useState(false);
@@ -68,12 +73,12 @@ export const Sources: FC<Props> = ({route}) => {
   } = useRookAPISources();
 
   const [isLoading, setIsLoading] = useState(true);
-  const [providers, setProviders] = useState<AuthorizedSource[]>([]);
+  const [providers, setProviders] = useState<InternalSources[]>([]);
 
   const navigate =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
-  const {getUserID} = useRookConfiguration();
+  const { getUserID } = useRookConfiguration();
 
   const {
     ready,
@@ -101,7 +106,7 @@ export const Sources: FC<Props> = ({route}) => {
     disableStepsCounter,
   } = useRookAndroidStepCounter();
 
-  const {isSamsungSyncEnabled, enableSamsungSync, disableSamsungSync} =
+  const { isSamsungSyncEnabled, enableSamsungSync, disableSamsungSync } =
     useRookSamsungHealth();
 
   const {
@@ -128,26 +133,36 @@ export const Sources: FC<Props> = ({route}) => {
   };
 
   const loadDataSources = async () => {
-    try {
-      const userId = await getUserID();
-      const availableDataSources = await getAuthorizedDataSourcesV2(userId);
+    const kits = await addHealthKits()
+    setProviders(kits)
+    setIsLoading(false)
 
-      const filtered = availableDataSources.filter(e => {
-        return !UNAVAILABLE.includes(e.name);
-      });
-
-      setProviders([...filtered]);
-    } catch (error) {
-      console.error('An error occurred trying to fetch the sources:', error);
-    } finally {
-      const extra: AuthorizedSource[] = await addHealthKits();
-      setProviders(provided => [...extra, ...provided]);
-
-      setIsLoading(false);
-    }
+    const api = await addAPIKits()
+    setProviders(prev => [...prev, ...api])
   };
 
-  const addHealthKits = async (): Promise<AuthorizedSource[]> => {
+  const addAPIKits = async (): Promise<InternalSources[]> => {
+    console.time("sourcerTime");
+    try {
+      const userId = await getUserID();
+
+      const availableDataSources = await getAuthorizedDataSourcesV2(userId)
+
+      return (availableDataSources as AuthorizedSource[]).filter(
+        e => {
+          return !UNAVAILABLE.includes(e.name);
+        },
+      );
+
+    } catch (error) {
+      console.error('An error occurred trying to fetch the sources:', error);
+      return []
+    } finally {
+      console.timeEnd("sourcerTime")
+    }
+  }
+
+  const addHealthKits = async (): Promise<InternalSources[]> => {
     const extra: AuthorizedSource[] = [];
 
     if (Platform.OS === 'ios') {
@@ -170,16 +185,13 @@ export const Sources: FC<Props> = ({route}) => {
               extra.push(sh);
               }*/
 
-      androidAvailability = true;
-      if (androidAvailability) {
-        const steps = await formAndroidSteps();
-        extra.push(steps);
-      }
+      const steps = await formAndroidSteps(androidAvailability);
+      extra.push(steps);
     }
     return extra;
   };
 
-  const formAndroidSteps = async (): Promise<Sources> => {
+  const formAndroidSteps = async (isAvailable: boolean): Promise<InternalSources> => {
     let connected = false;
 
     try {
@@ -190,12 +202,14 @@ export const Sources: FC<Props> = ({route}) => {
 
     return {
       name: 'Android Steps tracker',
+      description: isAvailable ? "" : "The steps tracker isn't available, \nthis device don't have the steps sensor",
+      available: isAvailable,
       imageUrl: require('../../assets/images/android.png'),
       authorized: connected,
     };
   };
 
-  const formHealthConnect = async (): Promise<Sources> => {
+  const formHealthConnect = async (): Promise<InternalSources> => {
     let connected = false;
 
     try {
@@ -211,7 +225,7 @@ export const Sources: FC<Props> = ({route}) => {
     };
   };
 
-  const formSamsungHealth = async (): Promise<Sources> => {
+  const formSamsungHealth = async (): Promise<InternalSources> => {
     let connected = false;
 
     try {
@@ -227,12 +241,12 @@ export const Sources: FC<Props> = ({route}) => {
     };
   };
 
-  const formAppleHealthSource = async (): Promise<Sources> => {
+  const formAppleHealthSource = async (): Promise<InternalSources> => {
     let connected = false;
 
     try {
       connected = await isBackgroundUpdatesEnabled();
-      console.log({apple: connected});
+      console.log({ apple: connected });
     } catch (error) {
       console.log(error);
     }
@@ -305,7 +319,7 @@ export const Sources: FC<Props> = ({route}) => {
     return !status;
   };
 
-  const handleAPISource = async ({name, connected}: SourceDetails) => {
+  const handleAPISource = async ({ name, connected }: SourceDetails) => {
     const userId = await getUserID();
     const type =
       APIDataSource[name.toUpperCase() as keyof typeof APIDataSource];
@@ -315,7 +329,7 @@ export const Sources: FC<Props> = ({route}) => {
       const result = await revokeDataSource(userId, type);
       console.log(result);
     } else {
-      const {authorizationUrl} = await getDataSourceAuthorizer({
+      const { authorizationUrl } = await getDataSourceAuthorizer({
         userID: userId,
         redirectURL: 'https://react.d1kx6n00xlijg7.amplifyapp.com/',
         dataSource: type,
@@ -349,12 +363,12 @@ export const Sources: FC<Props> = ({route}) => {
           result = await handleAndroidSteps(connected);
           break;
         default:
-          result = await handleAPISource({name, connected});
+          result = await handleAPISource({ name, connected });
           break;
       }
 
       const updatedSources = providers.map(source => {
-        if (source.name === name) return {...source, authorized: result};
+        if (source.name === name) return { ...source, authorized: result };
         return source;
       });
 
@@ -405,7 +419,7 @@ export const Sources: FC<Props> = ({route}) => {
 
       const updatedSources = providers.map(source => {
         if (source.name === 'Android Steps tracker')
-          return {...source, authorized: androidPermission && alarmPermissions};
+          return { ...source, authorized: androidPermission && alarmPermissions };
         return source;
       });
 
@@ -448,12 +462,14 @@ export const Sources: FC<Props> = ({route}) => {
         <FlatList
           data={providers}
           keyExtractor={item => item.name}
-          contentContainerStyle={{gap: 10}}
-          renderItem={({item}) => (
+          contentContainerStyle={{ gap: 10 }}
+          renderItem={({ item }) => (
             <Provider
               imageURL={item.imageUrl}
               connected={item.authorized}
               name={item.name}
+              description={item.description}
+              available={item.available}
               onPress={handleProviderPress}
             />
           )}
